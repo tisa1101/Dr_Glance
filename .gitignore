@@ -1,0 +1,45 @@
+# ─── Secrets & Environment Variables ───────────────────────────────────────
+.env
+.env.local
+.env.*.local
+*.env
+
+# ─── Python ─────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+env/
+pip-log.txt
+
+# ─── Database ───────────────────────────────────────────────────────────────
+*.db
+*.sqlite
+*.sqlite3
+
+# ─── Node / Frontend ────────────────────────────────────────────────────────
+node_modules/
+frontend/dist/
+frontend/build/
+.npm
+
+# ─── IDE & OS ───────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ─── Logs ───────────────────────────────────────────────────────────────────
+*.log
+logs/
+
+# ─── ML / Training Artifacts ────────────────────────────────────────────────
+datasets/
+training/
