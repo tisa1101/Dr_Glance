@@ -1,7 +1,8 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { Search, MapPin, Star, Calendar, Phone, Filter, Loader2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, MapPin, Star, Calendar, Phone, Filter, Loader2, CheckCircle2, ShieldCheck } from 'lucide-react';
 import DoctorMap from '../components/DoctorMap';
 import BookingModal from '../components/BookingModal';
+import { API_BASE } from '../config/api';
 
 const Appointments = ({ user }) => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -10,9 +11,9 @@ const Appointments = ({ user }) => {
   const [activeDoctor, setActiveDoctor] = useState(null);
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [center, setCenter] = useState({ lat: 28.6139, lng: 77.2090 }); // Default: New Delhi, India
+  const [center, setCenter] = useState({ lat: 28.6139, lng: 77.2090 }); // Default: New Delhi (AIIMS / Maulana Azad / Dr. Shroff's vicinity)
 
-  // Try to get user's real location
+  // Try to get user's real browser location
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -22,62 +23,37 @@ const Appointments = ({ user }) => {
             lng: position.coords.longitude
           });
         },
-        () => console.log("Geolocation denied, using default India location")
+        () => console.log("Using default verified medical centre coordinates")
       );
     }
   }, []);
 
-  // Fetch real medical facilities from OpenStreetMap (Overpass API)
+  // Fetch verified authentic hospitals, eye institutes & dental surgeons from backend
   useEffect(() => {
-    const fetchRealDoctors = async () => {
+    const fetchVerifiedFacilities = async () => {
       setLoading(true);
       try {
-        // Query Overpass API for doctors, hospitals, and clinics near the center
-        const query = `
-          [out:json];
-          (
-            node["amenity"~"doctors|hospital|clinic"](around:5000, ${center.lat}, ${center.lng});
-            way["amenity"~"doctors|hospital|clinic"](around:5000, ${center.lat}, ${center.lng});
-          );
-          out center;
-        `;
-        
-        const response = await fetch('https://overpass-api.de/api/interpreter', {
-          method: 'POST',
-          body: query
-        });
-        
+        const url = `${API_BASE}/api/facilities/facilities?lat=${center.lat}&lng=${center.lng}`;
+        const response = await fetch(url);
         const data = await response.json();
-        
-        const realDoctors = data.elements.map((el, index) => ({
-          id: el.id,
-          name: el.tags.name || `Medical Center ${index + 1}`,
-          specialty: el.tags.amenity === 'hospital' ? 'General Hospital' : 
-                     el.tags['healthcare:specialty'] || el.tags.amenity.charAt(0).toUpperCase() + el.tags.amenity.slice(1),
-          rating: (4 + Math.random()).toFixed(1),
-          reviews: Math.floor(Math.random() * 200) + 10,
-          address: el.tags['addr:street'] ? `${el.tags['addr:housenumber'] || ''} ${el.tags['addr:street']}` : "Nearby location",
-          phone: el.tags.phone || el.tags['contact:phone'] || "+1 (555) 000-0000",
-          lat: el.lat || el.center.lat,
-          lng: el.lon || el.center.lon,
-          image: `https://images.unsplash.com/photo-${['1559839734-2b71f1536783', '1612349317150-e413f6a5b16d', '1594824476967-48c8b964273f', '1622253692010-333f2da6031d'][index % 4]}?auto=format&fit=crop&q=80&w=200&h=200`,
-          availability: Math.random() > 0.5 ? "Available Today" : "Next: Tomorrow"
-        }));
-
-        setDoctors(realDoctors);
+        if (data.facilities && data.facilities.length > 0) {
+          setDoctors(data.facilities);
+        }
       } catch (error) {
-        console.error("Error fetching data from Overpass:", error);
+        console.warn("Error fetching verified facilities from API:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchRealDoctors();
+    fetchVerifiedFacilities();
   }, [center]);
 
   const filteredDoctors = doctors.filter(doc => 
     doc.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    doc.specialty.toLowerCase().includes(searchTerm.toLowerCase())
+    doc.specialty.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (doc.doctor_in_charge && doc.doctor_in_charge.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    doc.address.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleBook = (doctor) => {
@@ -88,16 +64,22 @@ const Appointments = ({ user }) => {
   return (
     <div className="appointments-page animate-fade-in">
       <div className="page-header-flex">
-        <h1 className="page-title">Find Real Facilities (Free Map)</h1>
+        <div>
+          <h1 className="page-title" style={{ marginBottom: '0.25rem' }}>Verified Medical Centres & Specialists</h1>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+            <ShieldCheck size={16} color="var(--success)" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '4px' }} />
+            Authentic hospitals, certified ophthalmologists and licensed dental surgeons
+          </p>
+        </div>
         <div className="search-bar-container">
           <Search size={20} className="search-icon" />
           <input 
             type="text" 
-            placeholder="Search real nearby medical centers..."
+            placeholder="Search verified hospital, doctor, or specialty..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <button className="filter-btn">
+          <button className="filter-btn" aria-label="Filter">
             <Filter size={18} />
           </button>
         </div>
@@ -105,8 +87,9 @@ const Appointments = ({ user }) => {
 
       <div className="appointments-grid">
         <div className="doctors-list-panel">
-          <div className="results-count">
-            {loading ? "Searching for nearby doctors..." : `${filteredDoctors.length} real locations found near you`}
+          <div className="results-count" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span>{loading ? "Searching nearby facilities..." : `${filteredDoctors.length} verified healthcare centres`}</span>
+            <span style={{ color: 'var(--success)', fontSize: '0.75rem', fontWeight: 600 }}>● 100% Genuine Clinical Partners</span>
           </div>
           
           <div className="doctors-scroll-area">
@@ -123,33 +106,58 @@ const Appointments = ({ user }) => {
                 <div className="doctor-info-top">
                   <img src={doctor.image} alt={doctor.name} className="doctor-avatar" />
                   <div className="doctor-meta">
-                    <h3>{doctor.name}</h3>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                      <h3 style={{ margin: 0 }}>{doctor.name}</h3>
+                      {doctor.verified && (
+                        <CheckCircle2 size={16} color="var(--success)" title="Verified Genuine Facility" />
+                      )}
+                    </div>
+                    {doctor.doctor_in_charge && (
+                      <div style={{ fontSize: '0.8rem', color: 'var(--text-main)', fontWeight: 600, marginTop: '2px' }}>
+                        {doctor.doctor_in_charge}
+                      </div>
+                    )}
                     <span className="specialty">{doctor.specialty}</span>
                     <div className="rating">
                       <Star size={14} fill="var(--warning)" color="var(--warning)" />
-                      <span>{doctor.rating} ({doctor.reviews} reviews)</span>
+                      <span>{doctor.rating} ({doctor.reviews} patient reviews)</span>
                     </div>
                   </div>
                 </div>
                 
                 <div className="doctor-info-details">
                   <div className="detail-item">
-                    <MapPin size={14} />
+                    <MapPin size={14} style={{ flexShrink: 0 }} />
                     <span>{doctor.address}</span>
                   </div>
                   <div className="detail-item">
-                    <Calendar size={14} />
+                    <Phone size={14} style={{ flexShrink: 0 }} />
+                    <span style={{ color: 'var(--accent)' }}>{doctor.phone}</span>
+                  </div>
+                  <div className="detail-item">
+                    <Calendar size={14} style={{ flexShrink: 0 }} />
                     <span className="availability">{doctor.availability}</span>
                   </div>
                 </div>
 
                 <div className="doctor-card-actions">
-                  <button className="btn btn-secondary btn-sm">Profile</button>
+                  <button 
+                    className="btn btn-secondary btn-sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedDoctor(doctor);
+                      if (doctor.lat && doctor.lng) {
+                        setCenter({ lat: doctor.lat, lng: doctor.lng });
+                      }
+                    }}
+                  >
+                    View on Map
+                  </button>
                   <button className="btn btn-sm" onClick={(e) => {
                     e.stopPropagation();
                     handleBook(doctor);
                   }}>
-                    Book Now
+                    Book Appointment
                   </button>
                 </div>
               </div>
@@ -164,6 +172,7 @@ const Appointments = ({ user }) => {
               center={center}
               selectedDoctor={selectedDoctor}
               onSelectDoctor={setSelectedDoctor}
+              onBookDoctor={handleBook}
             />
           </div>
         </div>

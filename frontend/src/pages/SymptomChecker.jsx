@@ -78,8 +78,8 @@ const DISEASE_DATASET = {
   ]
 };
 
-const SymptomChecker = () => {
-  const [activeTab, setActiveTab] = useState('eye');
+const SymptomChecker = ({ setActiveTab }) => {
+  const [activeTab, setActiveTabMode] = useState('eye');
   const [selectedSymptoms, setSelectedSymptoms] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -124,13 +124,13 @@ const SymptomChecker = () => {
           <div className="type-toggle">
             <button 
               className={`toggle-btn ${activeTab === 'eye' ? 'active' : ''}`}
-              onClick={() => { setActiveTab('eye'); setSelectedSymptoms([]); }}
+              onClick={() => { setActiveTabMode('eye'); setSelectedSymptoms([]); }}
             >
               <Eye size={18} /> Eye Symptoms
             </button>
             <button 
               className={`toggle-btn ${activeTab === 'mouth' ? 'active' : ''}`}
-              onClick={() => { setActiveTab('mouth'); setSelectedSymptoms([]); }}
+              onClick={() => { setActiveTabMode('mouth'); setSelectedSymptoms([]); }}
             >
               <Smile size={18} /> Mouth Symptoms
             </button>
@@ -212,7 +212,10 @@ const SymptomChecker = () => {
                   </div>
 
                   <div className="result-footer">
-                    <button className="btn btn-sm btn-block" onClick={() => window.location.href='#find-doctor'}>
+                    <button 
+                      className="btn btn-sm btn-block" 
+                      onClick={() => setActiveTab ? setActiveTab('appointments') : (window.location.hash = 'appointments')}
+                    >
                       Find Nearby Doctor <MoveRight size={16} />
                     </button>
                   </div>

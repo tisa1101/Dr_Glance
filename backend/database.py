@@ -25,6 +25,24 @@ class ScanHistory(Base):
     confidence = Column(Float)
     timestamp = Column(DateTime, default=datetime.datetime.utcnow)
 
+class Appointment(Base):
+    __tablename__ = "appointments"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, nullable=True)
+    user_email = Column(String)
+    user_name = Column(String)
+    doctor_name = Column(String)
+    doctor_specialty = Column(String)
+    facility_name = Column(String, nullable=True)
+    facility_address = Column(String, nullable=True)
+    facility_phone = Column(String, nullable=True)
+    date = Column(String)
+    time = Column(String)
+    appointment_type = Column(String)
+    reason = Column(String)
+    status = Column(String, default="Confirmed")
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
 Base.metadata.create_all(bind=engine)
 
 def get_db():

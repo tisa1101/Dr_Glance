@@ -12,15 +12,18 @@ import os
 # Load environment variables
 load_dotenv()
 
-# Import internal modules (we will create these next)
-from routers import analysis, chat, reminders, diet, auth, history, appointments
+# Import internal modules
+from routers import analysis, chat, reminders, diet, auth, history, appointments, facilities
 
 app = FastAPI(title="AI Smart Eye & Oral Health Monitoring API")
 
-# Setup CORS for Frontend
+# Setup CORS — allow origins from env, fallback to allow all for easy cloud deployment
+ALLOWED_ORIGINS_RAW = os.getenv("ALLOWED_ORIGINS", "*")
+ALLOWED_ORIGINS = [o.strip() for o in ALLOWED_ORIGINS_RAW.split(",")] if ALLOWED_ORIGINS_RAW != "*" else ["*"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # For dev only
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -34,10 +37,12 @@ app.include_router(chat.router, prefix="/api/chat", tags=["Chatbot"])
 app.include_router(reminders.router, prefix="/api/reminders", tags=["Reminders"])
 app.include_router(diet.router, prefix="/api/diet", tags=["Diet & Tips"])
 app.include_router(appointments.router, prefix="/api/appointments", tags=["Appointments"])
+app.include_router(facilities.router, prefix="/api/facilities", tags=["Facilities"])
 
 @app.get("/")
 def read_root():
     return {"message": "Welcome to AI Smart Eye & Oral Health Monitoring System API"}
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    port = int(os.getenv("PORT", 8000))
+    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=False)
