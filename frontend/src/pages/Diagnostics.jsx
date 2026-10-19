@@ -7,6 +7,7 @@ import {
 } from 'lucide-react'
 import { DisclaimerBanner, Badge, Spinner, Alert } from '../components/ui.jsx'
 import { API_BASE } from '../config/api.js'
+import DrGlanceLogo from '../components/DrGlanceLogo'
 
 // ─── Symptom data ─────────────────────────────────────────────────────────────
 const EYE_SYMPTOMS = [
@@ -169,14 +170,12 @@ function ClinicalReportModal({ isOpen, onClose, results, imageSrc, user }) {
         {/* Certificate Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '1rem', marginBottom: '1.25rem' }}>
           <div>
-            <div style={{ fontSize: '0.68rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--oura-cyan)', fontWeight: 700 }}>
-              DRGLANCE VERIFIED TELEMETRY CERTIFICATE
-            </div>
-            <h2 style={{ fontFamily: "var(--font-serif)", fontSize: '1.45rem', color: '#fff', fontWeight: 400, marginTop: '0.2rem' }}>
+            <DrGlanceLogo size="sm" variant="horizontal" glow={false} />
+            <h2 style={{ fontFamily: "var(--font-serif)", fontSize: '1.35rem', color: '#fff', fontWeight: 400, marginTop: '0.45rem' }}>
               Clinical Telemetry Audit Report
             </h2>
           </div>
-          <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer' }}>
+          <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer' }} aria-label="Close audit report">
             <X size={20} />
           </button>
         </div>

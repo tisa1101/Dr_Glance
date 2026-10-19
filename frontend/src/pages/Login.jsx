@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { API_BASE } from '../config/api'
 import { Sparkles, Shield, ArrowRight, Eye, Smile, Activity, Check } from 'lucide-react'
+import DrGlanceLogo from '../components/DrGlanceLogo'
 
 const FEATURES = [
   { icon: '👁️', title: 'Retinal & Ocular Analysis', text: 'Screening for cataract, glaucoma, diabetic retinopathy & fatigue' },
@@ -78,27 +79,8 @@ export default function Login({ onLogin }) {
         borderRight: '1px solid rgba(255, 255, 255, 0.07)',
       }}>
         {/* Brand Header */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-          <div style={{
-            width: 38, height: 38, borderRadius: '50%',
-            background: 'rgba(255, 255, 255, 0.05)',
-            border: '1.5px solid rgba(255, 255, 255, 0.22)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 0 16px rgba(255, 255, 255, 0.08)',
-          }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-              <circle cx="12" cy="12" r="9" />
-              <circle cx="12" cy="12" r="4.5" strokeDasharray="3 3" />
-            </svg>
-          </div>
-          <div>
-            <div style={{ fontSize: '1.05rem', fontWeight: 700, letterSpacing: '0.24em', textTransform: 'uppercase' }}>
-              DR • GLANCE
-            </div>
-            <div style={{ fontSize: '0.7rem', color: 'var(--text-3, #6b7280)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
-              CLINICAL BIOMETRICS
-            </div>
-          </div>
+        <div style={{ padding: '0.25rem 0' }}>
+          <DrGlanceLogo size="lg" variant="horizontal" />
         </div>
 
         {/* Central Editorial Narrative */}
@@ -198,6 +180,14 @@ export default function Login({ onLogin }) {
           boxShadow: '0 24px 70px rgba(0, 0, 0, 0.7)',
           position: 'relative', zIndex: 1,
         }}>
+          {/* Form Header Logo Mark */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '1.5rem' }}>
+            <DrGlanceLogo size={42} variant="mark" glow={true} />
+            <div style={{ fontSize: '0.78rem', color: 'var(--text-3, #94a3b8)', letterSpacing: '0.12em', textTransform: 'uppercase', marginTop: '0.5rem', fontWeight: 600 }}>
+              {isLogin ? 'Welcome Back' : 'Member Registration'}
+            </div>
+          </div>
+
           {/* Toggle pill (Login / Sign Up) */}
           <div style={{
             display: 'flex',

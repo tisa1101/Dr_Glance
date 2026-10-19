@@ -14,6 +14,7 @@ import SymptomChecker from './pages/SymptomChecker'
 import Reminders from './pages/Reminders'
 import DietTips from './pages/DietTips'
 import TelemetryDrawer from './components/TelemetryDrawer'
+import DrGlanceLogo from './components/DrGlanceLogo'
 
 const NAV_SECTIONS = [
   {
@@ -72,16 +73,8 @@ function App() {
       {/* ─── ŌURA Sidebar ─── */}
       <aside className={`sidebar ${mobileMenuOpen ? 'sidebar-mobile-open' : ''}`}>
         {/* Brand Emblem */}
-        <div className="logo">
-          <div className="logo-icon-wrap">
-            {/* Ōura circular ring glyph */}
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-              <circle cx="12" cy="12" r="9" />
-              <circle cx="12" cy="12" r="4.5" strokeDasharray="3 3" />
-            </svg>
-            <span className="logo-pulse-dot" />
-          </div>
-          <span className="logo-text">DR • GLANCE</span>
+        <div className="logo" style={{ padding: '0.25rem 0' }}>
+          <DrGlanceLogo size="md" variant="horizontal" />
         </div>
 
         {/* Navigation Sections */}
