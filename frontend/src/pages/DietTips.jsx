@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Apple, Sun, Info, Heart, ChevronRight, Activity, Zap } from 'lucide-react'
+import { API_BASE } from '../config/api'
 
 export default function DietTips({ user }) {
   const [tips, setTips] = useState(null)
@@ -9,11 +10,11 @@ export default function DietTips({ user }) {
   useEffect(() => {
     const fetchAll = async () => {
       try {
-        const tipsRes = await fetch('http://127.0.0.1:8000/api/diet/tips')
+        const tipsRes = await fetch(`${API_BASE}/api/diet/tips`)
         const tipsData = await tipsRes.json()
         setTips(tipsData.tips)
 
-        const dietEndpoint = user ? `http://127.0.0.1:8000/api/diet/diet/${user.user_id}` : 'http://127.0.0.1:8000/api/diet/diet'
+        const dietEndpoint = user ? `${API_BASE}/api/diet/diet/${user.user_id}` : `${API_BASE}/api/diet/diet`
         const dietRes = await fetch(dietEndpoint)
         const dietData = await dietRes.json()
         setDiet(dietData.diet)

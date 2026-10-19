@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Bell, Plus, Trash2, Clock, Calendar } from 'lucide-react'
+import { API_BASE } from '../config/api'
 
 export default function Reminders({ user }) {
   const [reminders, setReminders] = useState([])
@@ -8,7 +9,7 @@ export default function Reminders({ user }) {
   const [type, setType] = useState('general')
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/api/reminders/')
+    fetch(`${API_BASE}/api/reminders/`)
       .then(r => r.json())
       .then(data => setReminders(data.reminders))
       .catch(e => console.error("Failed to fetch reminders", e))
@@ -26,7 +27,7 @@ export default function Reminders({ user }) {
     }
 
     try {
-      const res = await fetch('http://127.0.0.1:8000/api/reminders/', {
+      const res = await fetch(`${API_BASE}/api/reminders/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newReminder)
@@ -42,7 +43,7 @@ export default function Reminders({ user }) {
 
   const handleDelete = async (id) => {
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/reminders/${id}`, {
+      const res = await fetch(`${API_BASE}/api/reminders/${id}`, {
         method: 'DELETE'
       })
       const data = await res.json()

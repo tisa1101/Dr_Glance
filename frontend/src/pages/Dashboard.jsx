@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Eye, Droplet, Activity, Apple, Bell, Zap, TrendingUp, Calendar, Sparkles } from 'lucide-react'
+import { API_BASE } from '../config/api'
 
 // ─── Stat Card ────────────────────────────────────────────────────────
 function StatCard({ icon, iconBg, label, value, trend, trendDir, subtext }) {
@@ -76,14 +77,14 @@ export default function Dashboard({ user, setActiveTab }) {
 
   useEffect(() => {
     // Fetch diet and tips from backend
-    fetch('http://127.0.0.1:8000/api/diet/tips')
+    fetch(`${API_BASE}/api/diet/tips`)
       .then(r => r.json())
       .then(data => setTips(data.tips))
       .catch(e => console.log('Mock/Offline tip fetch', e))
 
     const dietEndpoint = user
-      ? `http://127.0.0.1:8000/api/diet/diet/${user.user_id}`
-      : 'http://127.0.0.1:8000/api/diet/diet'
+      ? `${API_BASE}/api/diet/diet/${user.user_id}`
+      : `${API_BASE}/api/diet/diet`
     fetch(dietEndpoint)
       .then(r => r.json())
       .then(data => setDiet(data.diet))

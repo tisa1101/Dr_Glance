@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { MessageSquare, X, Send } from 'lucide-react'
+import { API_BASE } from '../config/api'
 
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false)
@@ -25,7 +26,7 @@ export default function Chatbot() {
     setInput('')
     
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/chat', {
+      const response = await fetch(`${API_BASE}/api/chat/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: userMsg })
