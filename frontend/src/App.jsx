@@ -43,9 +43,30 @@ const NAV_SECTIONS = [
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard')
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState(() => {
+    try {
+      const saved = localStorage.getItem('drglance_user')
+      return saved ? JSON.parse(saved) : null
+    } catch (e) {
+      return null
+    }
+  })
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [telemetryOpen, setTelemetryOpen] = useState(false)
+
+  const handleLogin = (userData) => {
+    try {
+      localStorage.setItem('drglance_user', JSON.stringify(userData))
+    } catch (e) {}
+    setUser(userData)
+  }
+
+  const handleLogout = () => {
+    try {
+      localStorage.removeItem('drglance_user')
+    } catch (e) {}
+    setUser(null)
+  }
 
   const renderContent = () => {
     switch (activeTab) {
@@ -61,7 +82,7 @@ function App() {
   }
 
   if (!user) {
-    return <Login onLogin={setUser} />
+    return <Login onLogin={handleLogin} />
   }
 
   const userInitials = user?.name
@@ -129,7 +150,7 @@ function App() {
           {/* Logout */}
           <div
             className="nav-item"
-            onClick={() => setUser(null)}
+            onClick={handleLogout}
             style={{ color: 'var(--oura-coral)', cursor: 'pointer' }}
           >
             <LogOut size={16} className="nav-icon" style={{ color: 'var(--oura-coral)' }} />
