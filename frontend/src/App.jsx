@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import {
   Activity, Camera, Home, MessageSquare, Apple, Bell, LogOut,
-  MapPin, Stethoscope, Clock, Menu, X, Sparkles, Moon, Heart, Flame
+  MapPin, Stethoscope, Clock, Menu, X, Sparkles, Moon, Heart, Flame,
+  Sun, Plus
 } from 'lucide-react'
 import Dashboard from './pages/Dashboard'
 import Diagnostics from './pages/Diagnostics'
@@ -130,7 +131,7 @@ function App() {
       </aside>
 
       {/* ─── Main Content ─── */}
-      <main className="main-content">
+      <main className="main-content" style={{ paddingBottom: '6rem' }}>
         <button
           className="mobile-menu-btn"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -141,6 +142,39 @@ function App() {
 
         {renderContent()}
       </main>
+
+      {/* ─── Floating Bottom Pill Dock (from ŌURA Screenshots) ─── */}
+      <div className="floating-bottom-dock">
+        <div
+          className={`dock-pill-item ${activeTab === 'dashboard' ? 'active' : ''}`}
+          onClick={() => setActiveTab('dashboard')}
+        >
+          <Sun size={15} style={{ marginBottom: 2 }} />
+          <span>Today</span>
+        </div>
+        <div
+          className={`dock-pill-item ${activeTab === 'history' ? 'active' : ''}`}
+          onClick={() => setActiveTab('history')}
+        >
+          <Activity size={15} style={{ marginBottom: 2 }} />
+          <span>Vitals</span>
+        </div>
+        <div
+          className={`dock-pill-item ${activeTab === 'symptom-checker' ? 'active' : ''}`}
+          onClick={() => setActiveTab('symptom-checker')}
+        >
+          <Sparkles size={15} style={{ marginBottom: 2 }} />
+          <span>My Health</span>
+        </div>
+        <button
+          className="dock-fab-btn"
+          onClick={() => setActiveTab('scan')}
+          title="Instant AI Clinical Scan"
+          aria-label="Instant AI Clinical Scan"
+        >
+          <Plus size={20} strokeWidth={2.5} />
+        </button>
+      </div>
 
       <Chatbot />
     </div>
