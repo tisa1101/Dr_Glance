@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Search, AlertCircle, Info, Stethoscope, ChevronRight, Eye, Smile, MoveRight } from 'lucide-react';
+import { Search, AlertCircle, Info, Stethoscope, ChevronRight, Eye, Smile, MoveRight, Sparkles } from 'lucide-react';
 
 const DISEASE_DATASET = {
   eye: [
@@ -81,7 +81,6 @@ const DISEASE_DATASET = {
 const SymptomChecker = ({ setActiveTab }) => {
   const [activeTab, setActiveTabMode] = useState('eye');
   const [selectedSymptoms, setSelectedSymptoms] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
 
   const allSymptoms = useMemo(() => {
     const symptoms = new Set();
@@ -113,27 +112,50 @@ const SymptomChecker = ({ setActiveTab }) => {
   const matchedDiseases = getMatchedDiseases();
 
   return (
-    <div className="symptom-checker-page animate-fade-in">
-      <div className="page-header">
-        <h1 className="page-title">Smart Symptom Checker</h1>
-        <p className="subtitle">Select your symptoms to see potential conditions and advice.</p>
+    <div className="symptom-checker-page animate-fade-in" style={{ maxWidth: '1200px', margin: '0 auto' }}>
+      <div className="page-header" style={{ marginBottom: '1.75rem' }}>
+        <span className="oura-category-tag" style={{ color: 'var(--oura-cyan, #38bdf8)', marginBottom: '0.5rem' }}>
+          <Sparkles size={13} /> CLINICAL RADAR
+        </span>
+        <h1 className="page-title" style={{ fontFamily: "var(--font-serif, 'Newsreader', serif)", fontSize: '2.5rem', fontWeight: 400, color: '#ffffff' }}>
+          Smart Symptom Radar
+        </h1>
+        <p className="subtitle" style={{ color: 'var(--text-2, #9ca3af)', fontSize: '0.95rem' }}>
+          Correlate specific ocular and oral discomfort indicators with validated pathological patterns.
+        </p>
       </div>
 
       <div className="checker-layout">
-        <div className="selection-panel card">
+        {/* ── Left Selection Panel ── */}
+        <div className="selection-panel card" style={{ padding: '1.5rem', background: 'var(--card, rgba(19, 21, 29, 0.86))' }}>
+          {/* High-Contrast Luxury Pill Switcher */}
           <div className="type-toggle">
             <button 
+              type="button"
               className={`toggle-btn ${activeTab === 'eye' ? 'active' : ''}`}
               onClick={() => { setActiveTabMode('eye'); setSelectedSymptoms([]); }}
+              style={{
+                background: activeTab === 'eye' ? '#ffffff' : 'transparent',
+                color: activeTab === 'eye' ? '#090a0f' : 'var(--text-2, #9ca3af)',
+              }}
             >
               <Eye size={18} /> Eye Symptoms
             </button>
             <button 
+              type="button"
               className={`toggle-btn ${activeTab === 'mouth' ? 'active' : ''}`}
               onClick={() => { setActiveTabMode('mouth'); setSelectedSymptoms([]); }}
+              style={{
+                background: activeTab === 'mouth' ? '#ffffff' : 'transparent',
+                color: activeTab === 'mouth' ? '#090a0f' : 'var(--text-2, #9ca3af)',
+              }}
             >
               <Smile size={18} /> Mouth Symptoms
             </button>
+          </div>
+
+          <div style={{ marginBottom: '0.85rem', fontSize: '0.74rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--text-3)', fontWeight: 700 }}>
+            SELECT OBSERVED SYMPTOMS
           </div>
 
           <div className="symptoms-grid">
@@ -150,73 +172,98 @@ const SymptomChecker = ({ setActiveTab }) => {
 
           <div className="selection-footer">
             <button 
-              className="btn btn-secondary btn-sm"
+              className="oura-btn oura-btn-outline"
+              style={{ padding: '0.4rem 0.95rem', fontSize: '0.78rem' }}
               onClick={() => setSelectedSymptoms([])}
               disabled={selectedSymptoms.length === 0}
             >
               Clear All
             </button>
             <span className="selection-count">
-              {selectedSymptoms.length} symptoms selected
+              <strong style={{ color: selectedSymptoms.length > 0 ? 'var(--oura-cyan)' : 'inherit' }}>
+                {selectedSymptoms.length}
+              </strong> symptoms active
             </span>
           </div>
         </div>
 
+        {/* ── Right Results Panel ── */}
         <div className="results-panel">
           {selectedSymptoms.length === 0 ? (
-            <div className="empty-results card">
-              <Stethoscope size={48} color="var(--text-muted)" style={{ marginBottom: '1rem' }} />
-              <h3>Identify Your Symptoms</h3>
-              <p>Select one or more symptoms on the left to begin the analysis.</p>
+            <div className="card" style={{ padding: '3.5rem 2rem', textAlign: 'center', background: 'rgba(255,255,255,0.02)' }}>
+              <Stethoscope size={44} color="var(--oura-cyan, #38bdf8)" style={{ margin: '0 auto 1.25rem', opacity: 0.8 }} />
+              <h3 style={{ fontFamily: "var(--font-serif)", fontSize: '1.5rem', color: '#fff', marginBottom: '0.4rem', fontWeight: 400 }}>
+                Identify Diagnostic Biomarkers
+              </h3>
+              <p style={{ color: 'var(--text-2)', fontSize: '0.88rem', maxWidth: '360px', margin: '0 auto' }}>
+                Select one or more symptoms on the left to calculate statistical correlation with known clinical conditions.
+              </p>
             </div>
           ) : matchedDiseases.length === 0 ? (
-            <div className="empty-results card">
-              <AlertCircle size={48} color="var(--warning)" style={{ marginBottom: '1rem' }} />
-              <h3>No Direct Matches Found</h3>
-              <p>Try selecting more symptoms or consult a professional for a specific diagnosis.</p>
+            <div className="card" style={{ padding: '3rem 2rem', textAlign: 'center' }}>
+              <AlertCircle size={44} color="var(--oura-amber, #f59e0b)" style={{ margin: '0 auto 1.25rem' }} />
+              <h3 style={{ fontFamily: "var(--font-serif)", fontSize: '1.45rem', color: '#fff', marginBottom: '0.4rem', fontWeight: 400 }}>
+                No Direct Matches Found
+              </h3>
+              <p style={{ color: 'var(--text-2)', fontSize: '0.88rem', maxWidth: '380px', margin: '0 auto' }}>
+                The selected symptoms do not form a recognizable clinical cluster. Consider scheduling a verified professional screening.
+              </p>
             </div>
           ) : (
             <div className="results-list">
               {matchedDiseases.map(disease => (
-                <div key={disease.name} className="result-card card animate-fade-in">
-                  <div className="result-header">
-                    <div className="title-area">
-                      <h3>{disease.name}</h3>
-                      <span className={`severity-badge ${disease.severity.toLowerCase()}`}>
-                        {disease.severity} Priority
+                <div key={disease.name} className="card animate-fade-in" style={{ padding: '1.5rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+                    <div>
+                      <h3 style={{ fontSize: '1.2rem', fontWeight: 600, color: '#ffffff', marginBottom: '0.35rem' }}>
+                        {disease.name}
+                      </h3>
+                      <span className={`oura-capsule-badge ${disease.severity === 'High' ? 'coral' : disease.severity === 'Moderate' ? 'terracotta' : 'sage'}`}>
+                        {disease.severity} Clinical Priority
                       </span>
                     </div>
-                    <div className="match-meter">
-                      <div className="meter-label">Match Probability</div>
-                      <div className="meter-bar">
-                        <div 
-                          className="meter-fill" 
-                          style={{ width: `${disease.matchPercentage}%` }}
-                        ></div>
+
+                    <div style={{ textAlign: 'right', minWidth: '130px' }}>
+                      <div style={{ fontSize: '0.72rem', color: 'var(--text-3)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                        Symptom Correlation
+                      </div>
+                      <div style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--oura-cyan)', marginTop: '0.15rem' }}>
+                        {disease.matchPercentage.toFixed(0)}%
                       </div>
                     </div>
                   </div>
 
-                  <div className="result-body">
-                    <div className="info-section">
-                      <h4><Info size={14} /> Symptoms</h4>
-                      <p>{disease.symptoms.join(', ')}</p>
+                  {/* Progress bar */}
+                  <div style={{ height: '6px', background: 'rgba(255,255,255,0.06)', borderRadius: '3px', overflow: 'hidden', marginBottom: '1.25rem' }}>
+                    <div 
+                      style={{
+                        width: `${disease.matchPercentage}%`, height: '100%',
+                        background: disease.matchPercentage > 60 ? 'linear-gradient(90deg, #38bdf8, #10b981)' : '#f59e0b',
+                        borderRadius: '3px',
+                        transition: 'width 0.4s ease'
+                      }}
+                    />
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', fontSize: '0.82rem' }}>
+                    <div style={{ color: 'var(--text-2)' }}>
+                      <strong style={{ color: '#ffffff' }}>Matched Symptoms: </strong> {disease.symptoms.join(', ')}
                     </div>
-                    <div className="info-section">
-                      <h4><AlertCircle size={14} /> Risk Factors</h4>
-                      <p>{disease.risk}</p>
+                    <div style={{ color: 'var(--text-2)' }}>
+                      <strong style={{ color: '#ffffff' }}>Known Risk Cohorts: </strong> {disease.risk}
                     </div>
                     <div className="advice-box">
-                      <strong>Medical Advice:</strong> {disease.advice}
+                      <strong style={{ color: '#ffffff' }}>Clinical Recommendation: </strong> {disease.advice}
                     </div>
                   </div>
 
-                  <div className="result-footer">
+                  <div style={{ marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px solid var(--border)' }}>
                     <button 
-                      className="btn btn-sm btn-block" 
+                      className="oura-btn" 
+                      style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.7rem' }}
                       onClick={() => setActiveTab ? setActiveTab('appointments') : (window.location.hash = 'appointments')}
                     >
-                      Find Nearby Doctor <MoveRight size={16} />
+                      Find Nearby Verified Clinic <MoveRight size={16} />
                     </button>
                   </div>
                 </div>
