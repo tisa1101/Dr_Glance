@@ -91,22 +91,41 @@ body {
   letter-spacing: -0.01em;
 }
 
-/* Atmospheric ŌURA top glow aura (Aubergine + Terracotta + Cyan moody wash) */
+/* ══════════════════════════════════════════════════════════
+   ŌURA 5-COLOR BIOSPHERE AURA (Violet + Terracotta + Cyan + Indigo + Emerald)
+══════════════════════════════════════════════════════════ */
 body::before {
   content: '';
   position: fixed; inset: 0; z-index: 0;
   background:
-    radial-gradient(ellipse 65% 50% at 50% -12%, rgba(139, 92, 246, 0.14) 0%, transparent 65%),
-    radial-gradient(ellipse 55% 45% at 90% 25%, rgba(224, 122, 95, 0.09) 0%, transparent 55%),
-    radial-gradient(ellipse 60% 50% at 10% 75%, rgba(56, 189, 248, 0.08) 0%, transparent 60%);
+    radial-gradient(ellipse 70% 50% at 18% -8%, rgba(139, 92, 246, 0.18) 0%, transparent 65%),
+    radial-gradient(ellipse 65% 50% at 85% 12%, rgba(224, 122, 95, 0.16) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 45% at 50% 45%, rgba(56, 189, 248, 0.13) 0%, transparent 65%),
+    radial-gradient(ellipse 55% 45% at 12% 82%, rgba(16, 185, 129, 0.14) 0%, transparent 60%),
+    radial-gradient(ellipse 55% 50% at 88% 85%, rgba(37, 99, 235, 0.14) 0%, transparent 60%);
   pointer-events: none;
-  animation: ambientBreath 20s ease-in-out infinite alternate;
+  animation: biosphereDrift 24s ease-in-out infinite alternate;
 }
 
-@keyframes ambientBreath {
-  0% { transform: scale(1); opacity: 0.9; }
-  50% { transform: scale(1.04) translateY(-1%); opacity: 1; }
-  100% { transform: scale(0.98) translateY(1%); opacity: 0.85; }
+/* Subtle starry bio-sparkle ambient overlay */
+body::after {
+  content: '';
+  position: fixed; inset: 0; z-index: 0;
+  background-image:
+    radial-gradient(1px 1px at 20px 30px, rgba(255, 255, 255, 0.12), rgba(0, 0, 0, 0)),
+    radial-gradient(1px 1px at 70px 140px, rgba(56, 189, 248, 0.15), rgba(0, 0, 0, 0)),
+    radial-gradient(1px 1px at 150px 80px, rgba(139, 92, 246, 0.12), rgba(0, 0, 0, 0)),
+    radial-gradient(1px 1px at 220px 180px, rgba(224, 122, 95, 0.12), rgba(0, 0, 0, 0));
+  background-size: 320px 320px;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+@keyframes biosphereDrift {
+  0%   { transform: scale(1) translate(0, 0); opacity: 0.9; }
+  33%  { transform: scale(1.06) translate(-1.5%, 1.5%); opacity: 1; }
+  66%  { transform: scale(0.96) translate(1.5%, -1%); opacity: 0.85; }
+  100% { transform: scale(1.03) translate(0%, 1%); opacity: 0.95; }
 }
 
 #root { position: relative; z-index: 1; }
@@ -349,16 +368,36 @@ body::before {
   color: #ffffff; margin-bottom: 1.25rem;
 }
 
-/* Atmospheric Card Glows */
+/* ══════════════════════════════════════════════════════════
+   ŌURA 5-COLOR SIGNATURE CARD AURAS
+══════════════════════════════════════════════════════════ */
 .aura-glow-violet {
-  background: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(139, 92, 246, 0.16) 0%, transparent 70%), var(--card);
+  background: radial-gradient(ellipse 85% 55% at 50% -12%, rgba(139, 92, 246, 0.22) 0%, transparent 72%), var(--card);
 }
 .aura-glow-terracotta {
-  background: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(224, 122, 95, 0.15) 0%, transparent 70%), var(--card);
+  background: radial-gradient(ellipse 85% 55% at 50% -12%, rgba(224, 122, 95, 0.22) 0%, transparent 72%), var(--card);
 }
 .aura-glow-cyan {
-  background: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(56, 189, 248, 0.14) 0%, transparent 70%), var(--card);
+  background: radial-gradient(ellipse 85% 55% at 50% -12%, rgba(56, 189, 248, 0.20) 0%, transparent 72%), var(--card);
 }
+.aura-glow-emerald {
+  background: radial-gradient(ellipse 85% 55% at 50% -12%, rgba(16, 185, 129, 0.20) 0%, transparent 72%), var(--card);
+}
+.aura-glow-indigo {
+  background: radial-gradient(ellipse 85% 55% at 50% -12%, rgba(37, 99, 235, 0.20) 0%, transparent 72%), var(--card);
+}
+
+/* Luminous hairline on top of every card */
+.card::before, .oura-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.24) 40%, rgba(56, 189, 248, 0.28) 60%, transparent 100%);
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.card:hover::before, .oura-card:hover::before { opacity: 1; }
 
 /* ══════════════════════════════════════════════════════════
    ŌURA TOP METRIC PILLS / CAROUSEL (Screen 3)
@@ -1169,16 +1208,97 @@ select option { background: var(--bg-3); }
 }
 
 /* ══════════════════════════════════════════════════════════
-   ANIMATIONS & TRANSITIONS
+   WORLD-CLASS MEDTECH ANIMATIONS & MICRO-INTERACTIONS
 ══════════════════════════════════════════════════════════ */
-@keyframes fadeIn    { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
-@keyframes slideInLeft  { from { opacity:0; transform:translateX(-12px); } to { opacity:1; transform:translateX(0); } }
-@keyframes slideInRight { from { opacity:0; transform:translateX(12px); }  to { opacity:1; transform:translateX(0); } }
-@keyframes spin      { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+@keyframes fadeIn      { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+@keyframes slideInLeft { from { opacity:0; transform:translateX(-12px); } to { opacity:1; transform:translateX(0); } }
+@keyframes slideInRight{ from { opacity:0; transform:translateX(12px); }  to { opacity:1; transform:translateX(0); } }
+@keyframes spin        { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
 
-.animate-fade-in { animation: fadeIn 0.3s ease both; }
-.animate-slide-left { animation: slideInLeft 0.3s ease both; }
+/* ECG / Spline Path drawing animation */
+@keyframes ecgLineDraw {
+  from { stroke-dashoffset: 1200; }
+  to   { stroke-dashoffset: 0; }
+}
+.animated-ecg-path {
+  stroke-dasharray: 1200;
+  stroke-dashoffset: 1200;
+  animation: ecgLineDraw 2.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Biometric Node Beacon Ring Ping */
+@keyframes beaconPing {
+  0%   { transform: scale(1); opacity: 0.9; }
+  50%  { transform: scale(1.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 0; }
+}
+.beacon-ring {
+  transform-origin: center;
+  animation: beaconPing 2.2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* Aura Dot Ripple Animations */
+@keyframes auraPulseCoral {
+  0%   { box-shadow: 0 0 0 0 rgba(224, 122, 95, 0.7); }
+  70%  { box-shadow: 0 0 0 12px rgba(224, 122, 95, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(224, 122, 95, 0); }
+}
+@keyframes auraPulseCyan {
+  0%   { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.7); }
+  70%  { box-shadow: 0 0 0 12px rgba(56, 189, 248, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); }
+}
+@keyframes auraPulseSage {
+  0%   { box-shadow: 0 0 0 0 rgba(134, 163, 120, 0.7); }
+  70%  { box-shadow: 0 0 0 12px rgba(134, 163, 120, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(134, 163, 120, 0); }
+}
+@keyframes auraPulseViolet {
+  0%   { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.7); }
+  70%  { box-shadow: 0 0 0 12px rgba(139, 92, 246, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0); }
+}
+
+.oura-status-dot-circle.coral.pulse-active { animation: auraPulseCoral 2.4s infinite; }
+.oura-status-dot-circle.sage.pulse-active   { animation: auraPulseSage 2.4s infinite; }
+.oura-status-dot-circle.petrol.pulse-active { animation: auraPulseCyan 2.4s infinite; }
+
+/* Hypnogram Segment Horizontal Draw-In */
+@keyframes hypnoExpand {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+.oura-hypno-seg {
+  transform-origin: left center;
+  animation: hypnoExpand 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Subtle Shimmer Sheen for Pill Buttons */
+.oura-btn, .btn {
+  position: relative;
+  overflow: hidden;
+}
+.oura-btn::after, .btn::after {
+  content: '';
+  position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.7s ease;
+  pointer-events: none;
+}
+.oura-btn:hover::after, .btn:hover::after {
+  left: 140%;
+}
+
+/* Staggered entrance helpers */
+.animate-fade-in { animation: fadeIn 0.4s ease both; }
+.animate-slide-left { animation: slideInLeft 0.4s ease both; }
 .animate-spin { animation: spin 0.8s linear infinite; }
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.12s; }
+.stagger-3 { animation-delay: 0.18s; }
+.stagger-4 { animation-delay: 0.24s; }
+.stagger-5 { animation-delay: 0.30s; }
 
 /* ══════════════════════════════════════════════════════════
    MOBILE RESPONSIVENESS
