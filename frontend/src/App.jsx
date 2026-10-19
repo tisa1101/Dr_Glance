@@ -2,7 +2,7 @@ import { useState } from 'react'
 import {
   Activity, Camera, Home, MessageSquare, Apple, Bell, LogOut,
   MapPin, Stethoscope, Clock, Menu, X, Sparkles, Moon, Heart, Flame,
-  Sun, Plus
+  Sun, Plus, Zap
 } from 'lucide-react'
 import Dashboard from './pages/Dashboard'
 import Diagnostics from './pages/Diagnostics'
@@ -13,6 +13,7 @@ import Appointments from './pages/Appointments'
 import SymptomChecker from './pages/SymptomChecker'
 import Reminders from './pages/Reminders'
 import DietTips from './pages/DietTips'
+import TelemetryDrawer from './components/TelemetryDrawer'
 
 const NAV_SECTIONS = [
   {
@@ -43,6 +44,7 @@ function App() {
   const [activeTab, setActiveTab] = useState('dashboard')
   const [user, setUser] = useState(null)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [telemetryOpen, setTelemetryOpen] = useState(false)
 
   const renderContent = () => {
     switch (activeTab) {
@@ -107,6 +109,21 @@ function App() {
 
         {/* Sidebar Footer */}
         <div className="sidebar-footer" style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+          {/* Architecture & Telemetry Trigger (For Trilogy Innovations Reviewers) */}
+          <div
+            className="nav-item"
+            onClick={() => setTelemetryOpen(true)}
+            style={{
+              background: 'rgba(56, 189, 248, 0.08)',
+              borderColor: 'rgba(56, 189, 248, 0.28)',
+              color: 'var(--oura-cyan)',
+              cursor: 'pointer',
+            }}
+          >
+            <Zap size={16} className="nav-icon" style={{ color: 'var(--oura-cyan)' }} />
+            <span className="nav-label" style={{ fontWeight: 700, fontSize: '0.82rem' }}>Engine Telemetry</span>
+          </div>
+
           {/* User Profile Capsule */}
           <div className="sidebar-user">
             <div className="sidebar-avatar">{userInitials}</div>
@@ -175,6 +192,12 @@ function App() {
           <Plus size={20} strokeWidth={2.5} />
         </button>
       </div>
+
+      {/* ─── Live Telemetry Drawer (Trilogy Engineering Spec) ─── */}
+      <TelemetryDrawer
+        isOpen={telemetryOpen}
+        onClose={() => setTelemetryOpen(false)}
+      />
 
       <Chatbot />
     </div>
