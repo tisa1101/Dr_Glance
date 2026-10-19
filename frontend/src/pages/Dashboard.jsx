@@ -1,82 +1,166 @@
 import React, { useEffect, useState } from 'react'
-import { Eye, Droplet, Activity, Apple, Bell, Zap, TrendingUp, Calendar, Sparkles } from 'lucide-react'
+import {
+  Eye, Droplet, Activity, Apple, Bell, Zap, TrendingUp, Calendar,
+  Sparkles, Info, ChevronRight, Moon, Flame, Heart, RefreshCw, CheckCircle, Shield
+} from 'lucide-react'
 import { API_BASE } from '../config/api'
 
-// ─── Stat Card ────────────────────────────────────────────────────────
-function StatCard({ icon, iconBg, label, value, trend, trendDir, subtext }) {
+// ─── ŌURA Metric Circle Badge (Screen 3) ──────────────────────────────────
+function OuraCircleMetric({ icon: Icon, value, label, active }) {
   return (
-    <div className="stat-card" style={{ flex: 1 }}>
-      <div className="stat-icon-wrap" style={{ background: iconBg }}>
-        {icon}
+    <div className="oura-metric-circle-item">
+      <div className={`oura-circle-badge ${active ? 'active' : ''}`}>
+        <Icon size={14} className="oura-circle-icon" />
+        <span className="oura-circle-value">{value}</span>
       </div>
-      <div className="stat-number">{value}</div>
-      <div className="stat-label">{label}</div>
-      {trend && (
-        <div className={`stat-trend ${trendDir}`}>
-          {trendDir === 'up' ? '↑' : trendDir === 'down' ? '↓' : '•'} {trend}
+      <span className="oura-circle-label">{label}</span>
+    </div>
+  )
+}
+
+// ─── ŌURA Arc Gauge Dial (Screen 3) ───────────────────────────────────────
+function OuraArcDial({ score = 94, subtitle = "Making progress" }) {
+  // SVG semi-circle gauge (180 degrees)
+  const radius = 80
+  const circumference = Math.PI * radius
+  const strokeDashoffset = circumference - (score / 100) * circumference
+
+  return (
+    <div className="oura-hero-arc-container">
+      <div className="oura-arc-wrap">
+        <svg width="220" height="125" viewBox="0 0 220 125" style={{ overflow: 'visible' }}>
+          {/* Background Arc */}
+          <path
+            d="M 20 110 A 80 80 0 0 1 200 110"
+            fill="none"
+            stroke="rgba(255, 255, 255, 0.08)"
+            strokeWidth="9"
+            strokeLinecap="round"
+          />
+          {/* Milestone tick */}
+          <circle cx="200" cy="110" r="3" fill="rgba(255,255,255,0.4)" />
+          {/* Progress Arc */}
+          <path
+            d="M 20 110 A 80 80 0 0 1 200 110"
+            fill="none"
+            stroke="url(#ouraArcGradient)"
+            strokeWidth="9"
+            strokeLinecap="round"
+            strokeDasharray={circumference}
+            strokeDashoffset={strokeDashoffset}
+            style={{ transition: 'stroke-dashoffset 1.4s cubic-bezier(0.16, 1, 0.3, 1)' }}
+          />
+          <defs>
+            <linearGradient id="ouraArcGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#ffffff" />
+              <stop offset="70%" stopColor="#38bdf8" />
+              <stop offset="100%" stopColor="#86a378" />
+            </linearGradient>
+          </defs>
+        </svg>
+
+        <div className="oura-arc-center-content">
+          <Flame size={18} color="rgba(255,255,255,0.8)" style={{ marginBottom: 2 }} />
+          <div className="oura-arc-sublabel">WELLNESS READINESS</div>
+          <div className="oura-arc-number">{score}%</div>
         </div>
-      )}
-      {subtext && <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.4rem' }}>{subtext}</div>}
+      </div>
+
+      <h2 className="oura-editorial-header">{subtitle}</h2>
+      <p className="oura-editorial-desc">
+        Today's clinical screening baseline is aligned with optimal health. Your retina and oral biometrics are within steady ranges.
+      </p>
     </div>
   )
 }
 
-// ─── Wellness Ring ────────────────────────────────────────────────────
-function WellnessRing({ score = 94 }) {
-  const radius = 40
-  const circumference = 2 * Math.PI * radius
-  const offset = circumference - (score / 100) * circumference
+// ─── Daytime Stress Dotted Graph (Screen 1) ────────────────────────────────
+function DaytimeStressGraph() {
+  const points = [
+    { x: 30, y: 75 },
+    { x: 60, y: 55 },
+    { x: 90, y: 70 },
+    { x: 120, y: 95 },
+    { x: 150, y: 80 },
+    { x: 180, y: 60 },
+    { x: 210, y: 50 },
+    { x: 240, y: 35 },
+    { x: 270, y: 40 },
+    { x: 300, y: 65 },
+    { x: 330, y: 70 },
+    { x: 360, y: 80 },
+  ]
+
+  const pathD = points.reduce((acc, pt, idx) => (
+    idx === 0 ? `M ${pt.x} ${pt.y}` : `${acc} L ${pt.x} ${pt.y}`
+  ), '')
 
   return (
-    <div style={{ position: 'relative', width: 100, height: 100 }}>
-      <svg width="100" height="100" style={{ transform: 'rotate(-90deg)' }}>
-        <circle cx="50" cy="50" r={radius} fill="none"
-          stroke="rgba(255,255,255,0.06)" strokeWidth="8" />
-        <circle cx="50" cy="50" r={radius} fill="none"
-          stroke="url(#wellnessGrad)" strokeWidth="8"
+    <div style={{ position: 'relative', width: '100%', padding: '1rem 0' }}>
+      <svg width="100%" height="160" viewBox="0 0 390 140" style={{ overflow: 'visible' }}>
+        {/* Horizontal guide lines */}
+        {[30, 60, 90, 120].map((y, i) => (
+          <line
+            key={i}
+            x1="20" y1={y} x2="310" y2={y}
+            stroke="rgba(255, 255, 255, 0.05)"
+            strokeDasharray="3 3"
+          />
+        ))}
+
+        {/* Labels on right */}
+        <text x="320" y="34" fill="rgba(255,255,255,0.35)" fontSize="9" fontFamily="inherit">Stressed</text>
+        <text x="320" y="64" fill="rgba(255,255,255,0.35)" fontSize="9" fontFamily="inherit">Engaged</text>
+        <text x="320" y="94" fill="rgba(255,255,255,0.35)" fontSize="9" fontFamily="inherit">Relaxed</text>
+        <text x="320" y="124" fill="rgba(255,255,255,0.35)" fontSize="9" fontFamily="inherit">Restored</text>
+
+        {/* Connected Line */}
+        <path
+          d={pathD}
+          fill="none"
+          stroke="rgba(255, 255, 255, 0.7)"
+          strokeWidth="2"
           strokeLinecap="round"
-          strokeDasharray={circumference}
-          strokeDashoffset={offset}
-          style={{ transition: 'stroke-dashoffset 1.5s cubic-bezier(0.4,0,0.2,1)' }}
         />
-        <defs>
-          <linearGradient id="wellnessGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#0ea5e9" />
-            <stop offset="100%" stopColor="#10b981" />
-          </linearGradient>
-        </defs>
+
+        {/* Nodes */}
+        {points.map((pt, i) => (
+          <circle
+            key={i}
+            cx={pt.x} cy={pt.y}
+            r="3.5"
+            fill="#ffffff"
+            stroke="#090a0f"
+            strokeWidth="1.5"
+          />
+        ))}
       </svg>
+
+      {/* Time marks */}
       <div style={{
-        position: 'absolute', inset: 0,
-        display: 'flex', flexDirection: 'column',
-        alignItems: 'center', justifyContent: 'center',
+        display: 'flex', justifyContent: 'space-between',
+        padding: '0.25rem 2rem 0 1rem', fontSize: '0.72rem',
+        color: 'var(--text-3)', fontWeight: 500
       }}>
-        <span style={{ fontSize: '1.3rem', fontWeight: 800, color: '#f8fafc', lineHeight: 1 }}>{score}</span>
-        <span style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 500 }}>/ 100</span>
+        <span>9am</span>
+        <span>12pm</span>
+        <span>6pm</span>
+        <span>12am</span>
       </div>
     </div>
   )
 }
 
-// ─── Diet Card ────────────────────────────────────────────────────────
-function DietFoodCard({ emoji, name, benefit }) {
-  return (
-    <div className="diet-card">
-      <div className="diet-emoji">{emoji}</div>
-      <div className="diet-name">{name}</div>
-      <div className="diet-benefit">{benefit}</div>
-    </div>
-  )
-}
-
-// ─── Dashboard ────────────────────────────────────────────────────────
+// ─── Main Dashboard ───────────────────────────────────────────────────────
 export default function Dashboard({ user, setActiveTab }) {
   const [tips, setTips] = useState(null)
   const [diet, setDiet] = useState(null)
-  const [scanCount, setScanCount] = useState(7)
+  const [activeStrainStatus, setActiveStrainStatus] = useState('minor')
+  const [restMode, setRestMode] = useState(false)
+  const [movementToggle, setMovementToggle] = useState(true)
+  const [activityToggle, setActivityToggle] = useState(false)
 
   useEffect(() => {
-    // Fetch diet and tips from backend
     fetch(`${API_BASE}/api/diet/tips`)
       .then(r => r.json())
       .then(data => setTips(data.tips))
@@ -91,293 +175,350 @@ export default function Dashboard({ user, setActiveTab }) {
       .catch(e => console.log('Mock/Offline diet fetch', e))
   }, [user])
 
-  const firstName = user?.name ? user.name.split(' ')[0] : 'User'
-  const hour = new Date().getHours()
-  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
-
-  const DIET_FOODS = [
-    { emoji: '🥕', name: 'Carrots', benefit: 'Rich in beta-carotene for eye health' },
-    { emoji: '🐟', name: 'Salmon', benefit: 'Omega-3s reduce dry eye risk' },
-    { emoji: '🥦', name: 'Broccoli', benefit: 'Vitamins C & E protect vision' },
-    { emoji: '🫐', name: 'Blueberries', benefit: 'Antioxidants protect retinas' },
-    { emoji: '🥬', name: 'Spinach', benefit: 'Lutein & zeaxanthin for eyes' },
-    { emoji: '🧄', name: 'Garlic', benefit: 'Antibacterial oral health boost' },
-    { emoji: '🍵', name: 'Green Tea', benefit: 'Catechins fight oral bacteria' },
-  ]
+  const firstName = user?.name ? user.name.split(' ')[0] : 'Member'
 
   return (
-    <div className="animate-fade-in">
-      {/* ─── Hero Header ─── */}
+    <div className="animate-fade-in" style={{ maxWidth: 1180, margin: '0 auto' }}>
+      {/* ─── Top Ōura Navigation & Pill Bar ─── */}
       <div style={{
-        display: 'flex', justifyContent: 'space-between',
-        alignItems: 'center', marginBottom: '2rem',
-        flexWrap: 'wrap', gap: '1.5rem',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: '1.5rem',
       }}>
-        <div>
-          <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 500, marginBottom: '0.25rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-            {greeting} ☀️
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <span style={{
+            fontSize: '0.75rem', fontWeight: 600,
+            padding: '0.35rem 0.95rem', borderRadius: '9999px',
+            background: 'rgba(255, 255, 255, 0.05)',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+            color: '#ffffff',
+            display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
+            cursor: 'default',
+          }}>
+            <Calendar size={13} color="var(--oura-cyan)" /> Today
+          </span>
+          <span style={{ fontSize: '0.8rem', color: 'var(--text-3)' }}>·</span>
+          <span style={{ fontSize: '0.82rem', color: 'var(--text-2)' }}>
+            Welcome, <strong style={{ color: '#fff' }}>{firstName}</strong>
+          </span>
+        </div>
+
+        <button
+          onClick={() => setActiveTab && setActiveTab('scan')}
+          className="oura-btn oura-btn-outline"
+          style={{ padding: '0.45rem 1.15rem', fontSize: '0.8rem' }}
+        >
+          <Sparkles size={14} color="var(--oura-cyan)" /> Quick Check-in
+        </button>
+      </div>
+
+      {/* ─── Top Metric Circles Carousel (Screen 3) ─── */}
+      <div className="oura-metric-bar">
+        <OuraCircleMetric icon={CrownIcon} value="88" label="Readiness" active />
+        <OuraCircleMetric icon={Eye} value="94" label="Vision Score" active />
+        <OuraCircleMetric icon={Sparkles} value="91" label="Oral Health" active />
+        <OuraCircleMetric icon={Flame} value="7" label="Scans Total" />
+        <OuraCircleMetric icon={Heart} value="68" label="Resting bpm" />
+      </div>
+
+      {/* ─── Main Two-Column Layout ─── */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '1.15fr 0.85fr',
+        gap: '1.75rem',
+        alignItems: 'start',
+      }}>
+        {/* Left Column: Hero Arc & Symptom Radar */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
+          {/* Card 1: ŌURA Hero Arc Gauge (Screen 3) */}
+          <div className="card aura-glow-cyan">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span className="oura-category-tag">
+                <Sparkles size={12} /> CLINICAL BIOMETRICS
+              </span>
+              <Info size={16} color="var(--text-3)" style={{ cursor: 'pointer' }} />
+            </div>
+
+            <OuraArcDial score={94} subtitle="Making progress" />
+
+            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', marginTop: '0.5rem' }}>
+              <button
+                className="oura-btn"
+                onClick={() => setActiveTab && setActiveTab('scan')}
+              >
+                Start AI Scan
+              </button>
+              <button
+                className="oura-btn oura-btn-outline"
+                onClick={() => setActiveTab && setActiveTab('history')}
+              >
+                View History
+              </button>
+            </div>
           </div>
-          <h1 className="page-title" style={{ marginBottom: 0 }}>
-            Welcome back, {firstName}!
-          </h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '0.25rem' }}>
-            Here's your health snapshot for today
-          </p>
-        </div>
 
-        {/* Wellness Ring */}
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: '1.25rem',
-          background: 'rgba(99,102,241,0.08)',
-          border: '1px solid rgba(99,102,241,0.2)',
-          borderRadius: '20px', padding: '1rem 1.5rem',
-          backdropFilter: 'blur(12px)',
-        }}>
-          <WellnessRing score={94} />
-          <div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.25rem' }}>Wellness Score</div>
-            <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--success)' }}>Excellent</div>
-            <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>↑ 2 pts from last week</div>
-          </div>
-        </div>
-      </div>
-
-      {/* ─── Stat Cards Row ─── */}
-      <div style={{ display: 'flex', gap: '1.25rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
-        <StatCard
-          icon={<Eye size={22} color="#06b6d4" />}
-          iconBg="linear-gradient(135deg, rgba(6,182,212,0.2), rgba(6,182,212,0.05))"
-          label="Last Eye Scan"
-          value="Normal"
-          trend="98% confidence"
-          trendDir="up"
-        />
-        <StatCard
-          icon={<Droplet size={22} color="#f59e0b" />}
-          iconBg="linear-gradient(135deg, rgba(245,158,11,0.2), rgba(245,158,11,0.05))"
-          label="Last Oral Scan"
-          value="Plaque"
-          trend="Action needed"
-          trendDir="down"
-        />
-        <StatCard
-          icon={<Activity size={22} color="#6366f1" />}
-          iconBg="linear-gradient(135deg, rgba(99,102,241,0.2), rgba(99,102,241,0.05))"
-          label="Scans This Month"
-          value={String(scanCount)}
-          trend="↑ 3 from last month"
-          trendDir="up"
-        />
-        <StatCard
-          icon={<TrendingUp size={22} color="#10b981" />}
-          iconBg="linear-gradient(135deg, rgba(16,185,129,0.2), rgba(16,185,129,0.05))"
-          label="Wellness Score"
-          value="94"
-          trend="Excellent"
-          trendDir="up"
-          subtext="Top 15% of users"
-        />
-      </div>
-
-      {/* ─── Quick Actions ─── */}
-      <div style={{ marginBottom: '2rem' }}>
-        <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>
-          Quick Actions
-        </div>
-        <div className="quick-actions">
-          <button
-            className="quick-action-btn"
-            onClick={() => setActiveTab && setActiveTab('scan')}
-          >
-            <span style={{
-              width: 42, height: 42, borderRadius: '12px',
-              background: 'linear-gradient(135deg, rgba(6,182,212,0.25), rgba(6,182,212,0.08))',
-              border: '1px solid rgba(6,182,212,0.3)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.35rem',
-              flexShrink: 0
-            }}>👁️</span>
-            <div>
-              <div className="action-title">Start Eye Screening</div>
-              <div className="action-sub">Deep neural network eye health analysis</div>
+          {/* Card 2: Symptom Radar (Screen 2) */}
+          <div className="card aura-glow-terracotta">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span className="oura-category-tag coral">
+                SYMPTOM RADAR
+              </span>
+              <Info size={16} color="var(--text-3)" style={{ cursor: 'pointer' }} />
             </div>
-          </button>
-          <button
-            className="quick-action-btn"
-            onClick={() => setActiveTab && setActiveTab('scan')}
-          >
-            <span style={{
-              width: 42, height: 42, borderRadius: '12px',
-              background: 'linear-gradient(135deg, rgba(245,158,11,0.25), rgba(245,158,11,0.08))',
-              border: '1px solid rgba(245,158,11,0.3)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.35rem',
-              flexShrink: 0
-            }}>🦷</span>
-            <div>
-              <div className="action-title">Start Oral Screening</div>
-              <div className="action-sub">Plaque, gum &amp; caries inspection</div>
-            </div>
-          </button>
-        </div>
-      </div>
 
-      {/* ─── Main Grid ─── */}
-      <div className="dashboard-grid">
-        {/* Left Column */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-          {/* Daily Tips */}
-          <div className="card">
-            <div className="card-header">
-              <Sparkles size={18} color="var(--accent)" />
-              Daily Health Tips
-              <span className="badge badge-info" style={{ marginLeft: 'auto', fontSize: '0.7rem' }}>Today</span>
+            <h2 className="oura-serif-title" style={{ marginTop: '0.4rem' }}>
+              {activeStrainStatus === 'major'
+                ? 'Major signs of strain'
+                : activeStrainStatus === 'minor'
+                ? 'Minor signs of eye strain'
+                : 'Zero signs of strain'}
+            </h2>
+            <p className="page-subtitle" style={{ marginBottom: '1.25rem' }}>
+              {activeStrainStatus === 'major'
+                ? 'Your biometrics show elevated retinal stress. Take extra care today and rest if you feel fatigue.'
+                : activeStrainStatus === 'minor'
+                ? 'Mild digital screen fatigue detected. Schedule a 20-20-20 visual rest pause and maintain hydration.'
+                : 'All biometrics are within optimal baseline limits. Continue your routine.'}
+            </p>
+
+            {/* 3 Status Capsules */}
+            <div className="oura-status-group">
+              <div
+                className={`oura-status-item ${activeStrainStatus === 'none' ? 'active' : ''}`}
+                onClick={() => setActiveStrainStatus('none')}
+              >
+                <div className="oura-status-dot-circle petrol" />
+                <span className="oura-status-label">No signs</span>
+              </div>
+              <div
+                className={`oura-status-item ${activeStrainStatus === 'minor' ? 'active' : ''}`}
+                onClick={() => setActiveStrainStatus('minor')}
+              >
+                <div className="oura-status-dot-circle sage" />
+                <span className="oura-status-label">Minor signs</span>
+              </div>
+              <div
+                className={`oura-status-item ${activeStrainStatus === 'major' ? 'active' : ''}`}
+                onClick={() => setActiveStrainStatus('major')}
+              >
+                <div className="oura-status-dot-circle coral" />
+                <span className="oura-status-label">Major signs</span>
+              </div>
             </div>
-            {tips ? (
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
-                <div>
-                  <div style={{
-                    display: 'flex', alignItems: 'center', gap: '0.5rem',
-                    marginBottom: '0.75rem', padding: '0.5rem 0.75rem',
-                    background: 'rgba(6,182,212,0.08)', borderRadius: '8px',
-                    border: '1px solid rgba(6,182,212,0.15)',
-                  }}>
-                    <span>👁️</span>
-                    <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--accent)' }}>Eye Care</span>
-                  </div>
-                  <ul style={{ paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-                    {tips.eye.map((t, i) => (
-                      <li key={i} style={{ fontSize: '0.88rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>{t}</li>
-                    ))}
-                  </ul>
+
+            {/* Turn on Rest Mode Pill Button */}
+            <button
+              className="oura-btn oura-btn-outline"
+              style={{
+                width: '100%',
+                marginBottom: '1.75rem',
+                borderColor: restMode ? 'var(--oura-coral)' : 'rgba(255, 255, 255, 0.2)',
+                background: restMode ? 'rgba(224, 122, 95, 0.15)' : 'rgba(255, 255, 255, 0.04)',
+              }}
+              onClick={() => setRestMode(!restMode)}
+            >
+              {restMode ? '✓ Rest Mode Active' : 'Turn on Rest Mode'}
+            </button>
+
+            {/* Section: Biometrics Under Strain */}
+            <div style={{ fontSize: '0.78rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-3)', fontWeight: 700, marginBottom: '0.5rem' }}>
+              Biometrics under strain
+            </div>
+
+            <div className="oura-metric-list">
+              <div className="oura-metric-row">
+                <div className="oura-metric-left">
+                  <h4>RETINAL FATIGUE INDEX</h4>
+                  <div className="val">+1.2° <span style={{ fontSize: '0.8rem', color: 'var(--text-3)' }}>dev</span></div>
                 </div>
-                <div>
-                  <div style={{
-                    display: 'flex', alignItems: 'center', gap: '0.5rem',
-                    marginBottom: '0.75rem', padding: '0.5rem 0.75rem',
-                    background: 'rgba(245,158,11,0.08)', borderRadius: '8px',
-                    border: '1px solid rgba(245,158,11,0.15)',
-                  }}>
-                    <span>👄</span>
-                    <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--warning)' }}>Oral Care</span>
-                  </div>
-                  <ul style={{ paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-                    {tips.oral.map((t, i) => (
-                      <li key={i} style={{ fontSize: '0.88rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>{t}</li>
-                    ))}
-                  </ul>
-                </div>
+                <span className="oura-capsule-badge coral">Elevated &gt;</span>
               </div>
-            ) : (
-              <div>
-                {[1, 2, 3].map(i => (
-                  <div key={i} className="shimmer" style={{ height: '16px', marginBottom: '0.75rem', width: `${70 + i * 8}%` }} />
-                ))}
-              </div>
-            )}
-          </div>
 
-          {/* Diet Recommendations horizontal scroll */}
-          <div className="card">
-            <div className="card-header">
-              <Apple size={18} color="var(--success)" />
-              Recommended Foods
-              <span className="badge badge-success" style={{ marginLeft: 'auto', fontSize: '0.7rem' }}>Personalized</span>
+              <div className="oura-metric-row">
+                <div className="oura-metric-left">
+                  <h4>ORAL TISSUE TENSION</h4>
+                  <div className="val">Baseline</div>
+                </div>
+                <span className="oura-capsule-badge sage">Optimal &gt;</span>
+              </div>
+
+              <div className="oura-metric-row">
+                <div className="oura-metric-left">
+                  <h4>SCREEN EXPOSURE STRAIN</h4>
+                  <div className="val">4h 45m</div>
+                </div>
+                <span className="oura-capsule-badge coral">Elevated &gt;</span>
+              </div>
             </div>
-            {diet ? (
-              <div className="diet-scroll">
-                {diet.eye?.map((item, i) => (
-                  <DietFoodCard
-                    key={`eye-${i}`}
-                    emoji={DIET_FOODS[i % DIET_FOODS.length].emoji}
-                    name={item.food}
-                    benefit={item.benefit}
-                  />
-                ))}
-                {diet.oral?.map((item, i) => (
-                  <DietFoodCard
-                    key={`oral-${i}`}
-                    emoji={DIET_FOODS[(i + 3) % DIET_FOODS.length].emoji}
-                    name={item.food}
-                    benefit={item.benefit}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="diet-scroll">
-                {DIET_FOODS.map((f, i) => (
-                  <DietFoodCard key={i} emoji={f.emoji} name={f.name} benefit={f.benefit} />
-                ))}
-              </div>
-            )}
+
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-3)', marginTop: '0.75rem', lineHeight: 1.45 }}>
+              The estimate is based on a unique neural combination of all your clinical scan data over time.
+            </p>
           </div>
         </div>
 
-        {/* Right Column */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-          {/* Reminders Widget */}
-          <div className="card" style={{ margin: 0 }}>
-            <div className="card-header">
-              <Bell size={18} color="var(--warning)" />
-              Upcoming Reminders
-              <span className="sidebar-badge" style={{ marginLeft: 'auto' }}>2</span>
+        {/* Right Column: Daytime Stress, Sleep Recovery, & Diet */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
+          {/* Card 3: Daytime Stress (Screen 1) */}
+          <div className="card aura-glow-violet">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span className="oura-category-tag" style={{ color: '#c084fc' }}>
+                DAYTIME STRESS
+              </span>
+              <Info size={16} color="var(--text-3)" style={{ cursor: 'pointer' }} />
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              {[
-                { label: 'Drink Water 💧', time: '14:00', color: 'primary' },
-                { label: '20-20-20 Eye Break 👁️', time: '15:30', color: 'success' },
-                { label: 'Brush Teeth 🦷', time: '20:00', color: 'warning' },
-                { label: 'Eye Drops 💊', time: '22:00', color: 'primary' },
-              ].map((r, i) => (
-                <div key={i} className="timeline-item">
-                  <div className={`timeline-dot ${r.color === 'success' ? 'success' : r.color === 'warning' ? 'warning' : ''}`} />
-                  <div className="timeline-content">
-                    <div className="timeline-title">{r.label}</div>
+
+            <DaytimeStressGraph />
+
+            {/* Toggles (Screen 1) */}
+            <div style={{ marginTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '0.5rem' }}>
+              <div className="oura-toggle-row">
+                <span className="oura-toggle-label">
+                  <Activity size={16} color="var(--text-2)" /> Daily eye rest reminders
+                </span>
+                <label className="oura-switch">
+                  <input
+                    type="checkbox"
+                    checked={movementToggle}
+                    onChange={() => setMovementToggle(!movementToggle)}
+                  />
+                  <span className="oura-slider" />
+                </label>
+              </div>
+
+              <div className="oura-toggle-row">
+                <span className="oura-toggle-label">
+                  <Sparkles size={16} color="var(--text-2)" /> Symptom radar notifications
+                </span>
+                <label className="oura-switch">
+                  <input
+                    type="checkbox"
+                    checked={activityToggle}
+                    onChange={() => setActivityToggle(!activityToggle)}
+                  />
+                  <span className="oura-slider" />
+                </label>
+              </div>
+            </div>
+
+            {/* Bottom mini tiles (Screen 1) */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginTop: '1.25rem' }}>
+              <div style={{
+                padding: '0.85rem 1rem', borderRadius: '16px',
+                background: 'rgba(255,255,255,0.035)', border: '1px solid rgba(255,255,255,0.06)',
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+              }}>
+                <div>
+                  <div style={{ fontSize: '0.68rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-3)', fontWeight: 700 }}>STRESSED</div>
+                  <div style={{ fontSize: '1.05rem', fontWeight: 700, color: '#ffffff' }}>45m</div>
+                </div>
+                <ChevronRight size={16} color="var(--text-3)" />
+              </div>
+
+              <div style={{
+                padding: '0.85rem 1rem', borderRadius: '16px',
+                background: 'rgba(255,255,255,0.035)', border: '1px solid rgba(255,255,255,0.06)',
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+              }}>
+                <div>
+                  <div style={{ fontSize: '0.68rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-3)', fontWeight: 700 }}>RESTORED</div>
+                  <div style={{ fontSize: '1.05rem', fontWeight: 700, color: '#ffffff' }}>1h 15m</div>
+                </div>
+                <ChevronRight size={16} color="var(--text-3)" />
+              </div>
+            </div>
+          </div>
+
+          {/* Card 4: Biometric Sleep & Tissue Recovery Hypnogram (Screen 5) */}
+          <div className="card">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span className="oura-category-tag">
+                <Moon size={12} /> TISSUE RESTORATION &amp; SLEEP
+              </span>
+              <span style={{ fontSize: '0.75rem', color: 'var(--oura-cyan)', fontWeight: 600 }}>Score 84</span>
+            </div>
+
+            <div style={{ margin: '0.75rem 0 0.25rem' }}>
+              <div style={{ fontSize: '0.7rem', color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 700 }}>TIME ASLEEP</div>
+              <div style={{ fontSize: '1.6rem', fontWeight: 700, color: '#ffffff' }}>7h 16m</div>
+              <div style={{ fontSize: '0.78rem', color: 'var(--text-2)' }}>Total restoration cycle 8h 16m</div>
+            </div>
+
+            {/* Hypnogram segmented bar */}
+            <div className="oura-hypnogram">
+              <div className="oura-hypno-seg awake" style={{ width: '12%' }}>Awake</div>
+              <div className="oura-hypno-seg rem" style={{ width: '25%' }}>REM</div>
+              <div className="oura-hypno-seg light" style={{ width: '45%' }}>Light</div>
+              <div className="oura-hypno-seg deep" style={{ width: '18%' }}>Deep</div>
+            </div>
+
+            <div className="oura-hypno-legend">
+              <div className="oura-hypno-legend-item">
+                <span className="oura-hypno-dot" style={{ background: '#64748b' }} />
+                <span>Awake 1h 0m</span>
+              </div>
+              <div className="oura-hypno-legend-item">
+                <span className="oura-hypno-dot" style={{ background: 'var(--oura-ice)' }} />
+                <span>REM 1h 50m (25%)</span>
+              </div>
+              <div className="oura-hypno-legend-item">
+                <span className="oura-hypno-dot" style={{ background: 'var(--oura-cyan)' }} />
+                <span>Light 4h 1m (55%)</span>
+              </div>
+              <div className="oura-hypno-legend-item">
+                <span className="oura-hypno-dot" style={{ background: 'var(--oura-deep-blue)' }} />
+                <span>Deep 1h 25m</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Card 5: Nutrition & Care Guidelines */}
+          <div className="card">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <span className="oura-category-tag sage">
+                <Apple size={12} /> CELLULAR NOURISHMENT
+              </span>
+              <span className="badge badge-success">Personalized</span>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+              {(diet?.eye?.slice(0, 2) || [
+                { food: 'Wild Salmon', benefit: 'Rich in Omega-3 DHA for retinal cellular membrane resilience' },
+                { food: 'Blueberries', benefit: 'Anthocyanins support microvascular eye circulation' }
+              ]).map((item, idx) => (
+                <div key={idx} style={{
+                  padding: '0.85rem 1rem', borderRadius: '14px',
+                  background: 'var(--card-inner)', border: '1px solid rgba(255,255,255,0.05)',
+                  display: 'flex', alignItems: 'center', gap: '0.75rem'
+                }}>
+                  <span style={{ fontSize: '1.25rem' }}>{idx === 0 ? '🐟' : '🫐'}</span>
+                  <div>
+                    <div style={{ fontSize: '0.88rem', fontWeight: 600, color: '#ffffff' }}>{item.food}</div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-2)' }}>{item.benefit}</div>
                   </div>
-                  <div className="timeline-time">{r.time}</div>
                 </div>
               ))}
             </div>
-            <button
-              className="btn btn-secondary"
-              style={{ width: '100%', marginTop: '1rem', borderRadius: '12px' }}
-              onClick={() => setActiveTab && setActiveTab('reminders')}
-            >
-              <Bell size={14} /> Manage Reminders
-            </button>
-          </div>
 
-          {/* Next Appointment Teaser */}
-          <div className="card" style={{ margin: 0, background: 'linear-gradient(135deg, rgba(99,102,241,0.12), rgba(6,182,212,0.06))', borderColor: 'rgba(99,102,241,0.2)' }}>
-            <div className="card-header">
-              <Calendar size={18} color="var(--primary)" />
-              Next Appointment
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <div style={{
-                width: 52, height: 52, borderRadius: '14px',
-                background: 'linear-gradient(135deg, #6366f1, #06b6d4)',
-                display: 'flex', flexDirection: 'column',
-                alignItems: 'center', justifyContent: 'center',
-                flexShrink: 0,
-              }}>
-                <div style={{ fontSize: '1rem', fontWeight: 800, color: 'white', lineHeight: 1 }}>28</div>
-                <div style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.8)', fontWeight: 500 }}>OCT</div>
-              </div>
-              <div>
-                <div style={{ fontWeight: 600, marginBottom: '0.2rem' }}>Dr. Sarah Chen</div>
-                <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>Ophthalmologist · 10:30 AM</div>
-                <span className="badge badge-success" style={{ marginTop: '0.5rem', display: 'inline-block' }}>Confirmed</span>
-              </div>
-            </div>
             <button
-              className="btn btn-secondary"
-              style={{ width: '100%', marginTop: '1rem', borderRadius: '12px', fontSize: '0.85rem' }}
-              onClick={() => setActiveTab && setActiveTab('appointments')}
+              className="oura-btn oura-btn-outline"
+              style={{ width: '100%', marginTop: '1rem', padding: '0.6rem 1rem', fontSize: '0.82rem' }}
+              onClick={() => setActiveTab && setActiveTab('diet-tips')}
             >
-              <Zap size={14} /> View All Appointments
+              Explore Full Nutrition Guide
             </button>
           </div>
         </div>
       </div>
     </div>
+  )
+}
+
+function CrownIcon({ size = 16, className = "" }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14" />
+    </svg>
   )
 }

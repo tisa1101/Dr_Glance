@@ -1,20 +1,12 @@
 import React, { useState } from 'react'
 import { API_BASE } from '../config/api'
+import { Sparkles, Shield, ArrowRight, Eye, Smile, Activity, Check } from 'lucide-react'
 
 const FEATURES = [
-  { icon: '👁️', text: 'AI-powered retinal & eye disease screening' },
-  { icon: '🦷', text: 'Instant oral health analysis with deep learning' },
-  { icon: '📊', text: 'Personalized wellness scores & health trends' },
-  { icon: '🔒', text: 'HIPAA-compliant, end-to-end encrypted data' },
-]
-
-const FLOATING_ICONS = [
-  { icon: '👁️', style: { top: '12%', left: '10%', animationDelay: '0s', animationDuration: '4s' } },
-  { icon: '🦷', style: { top: '30%', right: '8%', animationDelay: '1s', animationDuration: '5s' } },
-  { icon: '❤️', style: { top: '60%', left: '6%', animationDelay: '2s', animationDuration: '3.5s' } },
-  { icon: '🩺', style: { bottom: '20%', right: '12%', animationDelay: '0.5s', animationDuration: '4.5s' } },
-  { icon: '🧬', style: { top: '50%', left: '25%', animationDelay: '1.5s', animationDuration: '6s' } },
-  { icon: '💊', style: { bottom: '35%', right: '22%', animationDelay: '3s', animationDuration: '5s' } },
+  { icon: '👁️', title: 'Retinal & Ocular Analysis', text: 'Screening for cataract, glaucoma, diabetic retinopathy & fatigue' },
+  { icon: '🦷', title: 'Oral Biofilm & Tissue Inspection', text: 'Instant detection of plaque, gingivitis, caries & oral lesions' },
+  { icon: '📈', title: 'Longitudinal Wellness Tracking', text: 'Personalized readiness trends and predictive tissue recovery' },
+  { icon: '🔒', title: 'Zero-Knowledge Privacy', text: 'All clinical biometric telemetry encrypted at rest & in transit' },
 ]
 
 export default function Login({ onLogin }) {
@@ -43,14 +35,14 @@ export default function Login({ onLogin }) {
       const data = await response.json()
 
       if (!response.ok) {
-        setError(data.detail || 'An error occurred')
+        setError(data.detail || 'Authentication failed. Please verify credentials.')
         setLoading(false)
         return
       }
 
-      onLogin(data) // pass user info to app
+      onLogin(data)
     } catch (err) {
-      setError('Failed to connect to server')
+      setError('Failed to connect to clinical server. Please ensure backend is active.')
       setLoading(false)
     }
   }
@@ -66,185 +58,171 @@ export default function Login({ onLogin }) {
   return (
     <div style={{
       display: 'flex',
-      height: '100vh',
+      minHeight: '100vh',
       width: '100vw',
       overflow: 'hidden',
-      fontFamily: "'Inter', sans-serif",
-      background: '#030712',
+      fontFamily: "var(--font-body, 'Plus Jakarta Sans', sans-serif)",
+      background: '#090a0f',
+      color: '#ffffff',
     }}>
-      {/* ── Left Panel ── */}
+      {/* ── Left Editorial Panel (Ōura Bio-Wellness Aesthetics) ── */}
       <div style={{
-        flex: '0 0 52%',
+        flex: '0 0 54%',
         position: 'relative',
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: '4rem 3.5rem',
-        background: 'linear-gradient(135deg, #0d1117 0%, #0f172a 40%, #1e1b4b 70%, #0d1117 100%)',
+        justifyContent: 'space-between',
+        padding: '4.5rem 5rem',
+        background: 'radial-gradient(ellipse 85% 65% at 20% 15%, rgba(139, 92, 246, 0.16) 0%, transparent 65%), radial-gradient(ellipse 70% 60% at 85% 85%, rgba(224, 122, 95, 0.12) 0%, transparent 60%), #090a0f',
+        borderRight: '1px solid rgba(255, 255, 255, 0.07)',
       }}>
-        {/* Mesh overlay */}
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          background: `
-            radial-gradient(ellipse 70% 60% at 30% 30%, rgba(99,102,241,0.18) 0%, transparent 60%),
-            radial-gradient(ellipse 50% 50% at 80% 70%, rgba(6,182,212,0.14) 0%, transparent 60%),
-            radial-gradient(ellipse 40% 40% at 60% 10%, rgba(139,92,246,0.12) 0%, transparent 50%)
-          `,
-          pointerEvents: 'none',
-        }} />
-
-        {/* Grid pattern */}
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          backgroundImage: `linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)`,
-          backgroundSize: '50px 50px',
-          pointerEvents: 'none',
-        }} />
-
-        {/* Floating icons */}
-        {FLOATING_ICONS.map((item, i) => (
-          <div key={i} style={{
-            position: 'absolute',
-            fontSize: '2rem',
-            opacity: 0.15,
-            animation: `float ${item.style.animationDuration} ease-in-out infinite`,
-            animationDelay: item.style.animationDelay,
-            ...item.style,
+        {/* Brand Header */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+          <div style={{
+            width: 38, height: 38, borderRadius: '50%',
+            background: 'rgba(255, 255, 255, 0.05)',
+            border: '1.5px solid rgba(255, 255, 255, 0.22)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: '0 0 16px rgba(255, 255, 255, 0.08)',
           }}>
-            {item.icon}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+              <circle cx="12" cy="12" r="9" />
+              <circle cx="12" cy="12" r="4.5" strokeDasharray="3 3" />
+            </svg>
           </div>
-        ))}
-
-        {/* Content */}
-        <div style={{ position: 'relative', zIndex: 1, maxWidth: '440px', width: '100%' }}>
-          {/* Logo */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '3rem' }}>
-            <div style={{
-              width: '50px', height: '50px',
-              background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-              borderRadius: '14px',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '1.5rem',
-              boxShadow: '0 0 24px rgba(99,102,241,0.4)',
-            }}>
-              👁️
+          <div>
+            <div style={{ fontSize: '1.05rem', fontWeight: 700, letterSpacing: '0.24em', textTransform: 'uppercase' }}>
+              DR • GLANCE
             </div>
-            <div>
-              <div style={{
-                fontSize: '1.5rem', fontWeight: 800,
-                background: 'linear-gradient(135deg, #fff 0%, #06b6d4 100%)',
-                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text', letterSpacing: '-0.5px',
-              }}>
-                DRGLANCE
-              </div>
-              <div style={{ fontSize: '0.75rem', color: '#64748b', letterSpacing: '0.05em', fontWeight: 500 }}>
-                Clinical AI Platform
-              </div>
+            <div style={{ fontSize: '0.7rem', color: 'var(--text-3, #6b7280)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+              CLINICAL BIOMETRICS
             </div>
           </div>
+        </div>
 
-          {/* Headline */}
+        {/* Central Editorial Narrative */}
+        <div style={{ maxWidth: '480px', margin: '3rem 0' }}>
+          <span className="oura-category-tag" style={{ color: 'var(--oura-cyan, #38bdf8)', marginBottom: '0.75rem' }}>
+            <Sparkles size={13} /> INTELLIGENT HEALTH SCREENING
+          </span>
+
           <h1 style={{
-            fontSize: '2.6rem', fontWeight: 900, lineHeight: 1.15,
-            marginBottom: '1rem', letterSpacing: '-1px',
-            background: 'linear-gradient(135deg, #f8fafc 0%, #cbd5e1 100%)',
-            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+            fontFamily: "var(--font-serif, 'Newsreader', serif)",
+            fontSize: '3.1rem',
+            fontWeight: 400,
+            lineHeight: 1.12,
+            letterSpacing: '-0.02em',
+            color: '#ffffff',
+            marginBottom: '1.25rem',
           }}>
-            AI-Powered<br />
-            <span style={{
-              background: 'linear-gradient(90deg, #6366f1, #06b6d4)',
-              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
-            }}>Clinical Screening</span>
+            Your biometrics. Decoded at a single glance.
           </h1>
 
-          <p style={{ color: '#64748b', marginBottom: '2.5rem', fontSize: '1rem', lineHeight: 1.6 }}>
-            Get instant, accurate AI diagnostics for eye and oral health — right from your device.
+          <p style={{
+            color: 'var(--text-2, #9ca3af)',
+            fontSize: '1rem',
+            lineHeight: 1.6,
+            marginBottom: '2.5rem',
+            fontWeight: 400,
+          }}>
+            Instant, clinical-grade eye &amp; oral screening powered by deep neural computer vision. Understand tissue vitality and daily systemic readiness.
           </p>
 
-          {/* Feature bullets */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-            {FEATURES.map((f, i) => (
-              <div key={i} style={{
-                display: 'flex', alignItems: 'center', gap: '0.85rem',
-                padding: '0.75rem 1rem',
-                background: 'rgba(255,255,255,0.03)',
-                border: '1px solid rgba(255,255,255,0.06)',
-                borderRadius: '12px',
-                backdropFilter: 'blur(8px)',
+          {/* Feature list with minimal luxury styling */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            {FEATURES.map((item, idx) => (
+              <div key={idx} style={{
+                display: 'flex', alignItems: 'flex-start', gap: '1rem',
+                padding: '0.9rem 1.15rem',
+                background: 'rgba(255, 255, 255, 0.03)',
+                border: '1px solid rgba(255, 255, 255, 0.06)',
+                borderRadius: '16px',
+                backdropFilter: 'blur(10px)',
               }}>
-                <span style={{
-                  width: '32px', height: '32px',
-                  background: 'linear-gradient(135deg, rgba(99,102,241,0.2), rgba(6,182,212,0.2))',
-                  borderRadius: '8px',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: '1rem', flexShrink: 0,
-                }}>
-                  {f.icon}
-                </span>
-                <span style={{ fontSize: '0.88rem', color: '#cbd5e1', fontWeight: 400 }}>{f.text}</span>
+                <span style={{ fontSize: '1.2rem', lineHeight: 1 }}>{item.icon}</span>
+                <div>
+                  <div style={{ fontSize: '0.88rem', fontWeight: 600, color: '#ffffff', marginBottom: '0.15rem' }}>
+                    {item.title}
+                  </div>
+                  <div style={{ fontSize: '0.78rem', color: 'var(--text-2, #9ca3af)', lineHeight: 1.4 }}>
+                    {item.text}
+                  </div>
+                </div>
               </div>
             ))}
           </div>
+        </div>
 
-          {/* Bottom badge */}
-          <div style={{
-            marginTop: '2.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem',
-            padding: '0.5rem 1rem', background: 'rgba(16,185,129,0.1)',
-            border: '1px solid rgba(16,185,129,0.2)', borderRadius: '99px',
-            width: 'fit-content',
+        {/* Footer info pill */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+          <span style={{
+            display: 'inline-flex', alignItems: 'center', gap: '0.45rem',
+            padding: '0.4rem 0.95rem', borderRadius: '9999px',
+            background: 'rgba(255, 255, 255, 0.04)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            fontSize: '0.75rem', color: 'var(--text-2, #9ca3af)',
           }}>
-            <div style={{ width: 8, height: 8, background: '#10b981', borderRadius: '50%', animation: 'pulse 2s infinite' }} />
-            <span style={{ fontSize: '0.8rem', color: '#34d399', fontWeight: 600 }}>
-              v2.0 Clinical AI — Now Live
-            </span>
-          </div>
+            <Shield size={12} color="var(--oura-cyan, #38bdf8)" />
+            HIPAA-Ready Architecture · End-to-End Encrypted
+          </span>
         </div>
       </div>
 
-      {/* ── Right Panel ── */}
+      {/* ── Right Authentication Card ── */}
       <div style={{
-        flex: '0 0 48%',
+        flex: '0 0 46%',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '2rem',
-        background: 'rgba(5, 10, 20, 0.97)',
+        padding: '2.5rem',
+        background: '#090a0f',
         position: 'relative',
       }}>
+        {/* Subtle background glow */}
+        <div style={{
+          position: 'absolute',
+          width: '320px', height: '320px',
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(56, 189, 248, 0.08) 0%, transparent 70%)',
+          pointerEvents: 'none',
+        }} />
+
         <div style={{
           width: '100%', maxWidth: '420px',
-          background: 'rgba(15,23,42,0.8)',
-          backdropFilter: 'blur(24px)',
-          border: '1px solid rgba(255,255,255,0.08)',
-          borderRadius: '24px',
-          padding: '2.5rem',
-          boxShadow: '0 24px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)',
-          animation: 'fadeIn 0.5s cubic-bezier(0.16,1,0.3,1) forwards',
+          background: 'rgba(18, 20, 28, 0.88)',
+          backdropFilter: 'blur(28px)',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+          borderRadius: '26px',
+          padding: '2.75rem',
+          boxShadow: '0 24px 70px rgba(0, 0, 0, 0.7)',
+          position: 'relative', zIndex: 1,
         }}>
-          {/* Toggle tabs */}
+          {/* Toggle pill (Login / Sign Up) */}
           <div style={{
             display: 'flex',
-            background: 'rgba(0,0,0,0.3)',
-            borderRadius: '14px',
-            padding: '0.3rem',
+            background: 'rgba(255, 255, 255, 0.04)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            borderRadius: '9999px',
+            padding: '4px',
             marginBottom: '2rem',
           }}>
-            {['Login', 'Sign Up'].map((label, i) => {
+            {['Sign In', 'Create Account'].map((label, i) => {
               const active = (i === 0) === isLogin
               return (
-                <button key={i} onClick={() => { setIsLogin(i === 0); setError('') }} style={{
-                  flex: 1, padding: '0.65rem', borderRadius: '10px', border: 'none',
-                  fontFamily: "'Inter', sans-serif", fontWeight: 600, fontSize: '0.9rem',
-                  cursor: 'pointer', transition: 'all 0.25s ease',
-                  background: active ? 'linear-gradient(135deg, #6366f1, #8b5cf6)' : 'transparent',
-                  color: active ? 'white' : '#64748b',
-                  boxShadow: active ? '0 4px 12px rgba(99,102,241,0.35)' : 'none',
-                }}>
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => { setIsLogin(i === 0); setError('') }}
+                  style={{
+                    flex: 1, padding: '0.65rem', borderRadius: '9999px', border: 'none',
+                    fontFamily: 'inherit', fontWeight: 600, fontSize: '0.86rem',
+                    cursor: 'pointer', transition: 'all 0.2s ease',
+                    background: active ? '#ffffff' : 'transparent',
+                    color: active ? '#090a0f' : 'var(--text-2, #9ca3af)',
+                    boxShadow: active ? '0 4px 16px rgba(255, 255, 255, 0.15)' : 'none',
+                  }}
+                >
                   {label}
                 </button>
               )
@@ -252,124 +230,97 @@ export default function Login({ onLogin }) {
           </div>
 
           <h2 style={{
-            fontSize: '1.5rem', fontWeight: 700,
-            marginBottom: '0.4rem', color: '#f8fafc', letterSpacing: '-0.3px',
+            fontFamily: "var(--font-serif, 'Newsreader', serif)",
+            fontSize: '1.9rem',
+            fontWeight: 400,
+            marginBottom: '0.35rem',
+            color: '#ffffff',
+            letterSpacing: '-0.01em',
           }}>
-            {isLogin ? 'Welcome back 👋' : 'Create account 🎉'}
+            {isLogin ? 'Welcome back' : 'Join Dr. Glance'}
           </h2>
-          <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '1.75rem' }}>
-            {isLogin ? 'Sign in to access your health dashboard.' : 'Start your AI health journey today.'}
+          <p style={{ color: 'var(--text-2, #9ca3af)', fontSize: '0.88rem', marginBottom: '1.75rem' }}>
+            {isLogin ? 'Access your clinical health telemetry and scan logs.' : 'Begin your intelligent biometric assessment.'}
           </p>
 
-          {/* Error */}
+          {/* Error Message Banner */}
           {error && (
             <div style={{
-              background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)',
-              color: '#f87171', padding: '0.75rem 1rem', borderRadius: '12px',
-              marginBottom: '1.25rem', fontSize: '0.88rem', display: 'flex',
-              alignItems: 'center', gap: '0.5rem',
+              background: 'rgba(224, 122, 95, 0.12)',
+              border: '1px solid rgba(224, 122, 95, 0.3)',
+              color: '#fca5a5',
+              padding: '0.75rem 1rem',
+              borderRadius: '14px',
+              marginBottom: '1.25rem',
+              fontSize: '0.82rem',
+              lineHeight: 1.4,
             }}>
-              ⚠️ {error}
+              {error}
             </div>
           )}
 
           {/* Form */}
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {!isLogin && (
-              <div style={{ position: 'relative' }}>
-                <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', fontSize: '1.1rem' }}>👤</span>
+              <div className="input-group" style={{ margin: 0 }}>
+                <label>Full Name</label>
                 <input
                   type="text"
-                  placeholder="Full Name"
+                  placeholder="e.g. Elena Rostova"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
-                  style={{
-                    width: '100%', padding: '0.85rem 1rem 0.85rem 2.75rem',
-                    borderRadius: '12px', border: '1px solid rgba(255,255,255,0.08)',
-                    background: 'rgba(0,0,0,0.25)', color: 'white',
-                    fontFamily: "'Inter', sans-serif", fontSize: '0.9rem',
-                    outline: 'none', transition: 'border-color 0.2s, box-shadow 0.2s',
-                  }}
-                  onFocus={e => { e.target.style.borderColor = 'rgba(99,102,241,0.5)'; e.target.style.boxShadow = '0 0 0 3px rgba(99,102,241,0.15)' }}
-                  onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.08)'; e.target.style.boxShadow = 'none' }}
                 />
               </div>
             )}
 
-            <div style={{ position: 'relative' }}>
-              <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', fontSize: '1.1rem' }}>✉️</span>
+            <div className="input-group" style={{ margin: 0 }}>
+              <label>Email Address</label>
               <input
                 type="email"
-                placeholder="Email Address"
+                placeholder="member@drglance.ai"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                style={{
-                  width: '100%', padding: '0.85rem 1rem 0.85rem 2.75rem',
-                  borderRadius: '12px', border: '1px solid rgba(255,255,255,0.08)',
-                  background: 'rgba(0,0,0,0.25)', color: 'white',
-                  fontFamily: "'Inter', sans-serif", fontSize: '0.9rem',
-                  outline: 'none', transition: 'border-color 0.2s, box-shadow 0.2s',
-                }}
-                onFocus={e => { e.target.style.borderColor = 'rgba(99,102,241,0.5)'; e.target.style.boxShadow = '0 0 0 3px rgba(99,102,241,0.15)' }}
-                onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.08)'; e.target.style.boxShadow = 'none' }}
               />
             </div>
 
-            <div style={{ position: 'relative' }}>
-              <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', fontSize: '1.1rem' }}>🔒</span>
+            <div className="input-group" style={{ margin: 0 }}>
+              <label>Password</label>
               <input
                 type="password"
-                placeholder="Password"
+                placeholder="••••••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                style={{
-                  width: '100%', padding: '0.85rem 1rem 0.85rem 2.75rem',
-                  borderRadius: '12px', border: '1px solid rgba(255,255,255,0.08)',
-                  background: 'rgba(0,0,0,0.25)', color: 'white',
-                  fontFamily: "'Inter', sans-serif", fontSize: '0.9rem',
-                  outline: 'none', transition: 'border-color 0.2s, box-shadow 0.2s',
-                }}
-                onFocus={e => { e.target.style.borderColor = 'rgba(99,102,241,0.5)'; e.target.style.boxShadow = '0 0 0 3px rgba(99,102,241,0.15)' }}
-                onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.08)'; e.target.style.boxShadow = 'none' }}
               />
             </div>
 
-            <button type="submit" disabled={loading} style={{
-              marginTop: '0.5rem',
-              background: loading ? 'rgba(99,102,241,0.4)' : 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
-              color: 'white', border: 'none',
-              padding: '0.9rem 1.75rem', borderRadius: '99px',
-              fontFamily: "'Inter', sans-serif", fontWeight: 700, fontSize: '0.95rem',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              transition: 'all 0.25s ease',
-              boxShadow: '0 4px 16px rgba(99,102,241,0.4)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
-            }}
-            onMouseEnter={e => { if (!loading) { e.target.style.transform = 'translateY(-2px)'; e.target.style.boxShadow = '0 8px 24px rgba(99,102,241,0.5)' }}}
-            onMouseLeave={e => { e.target.style.transform = 'none'; e.target.style.boxShadow = '0 4px 16px rgba(99,102,241,0.4)' }}>
-              {loading ? '⏳ Processing...' : (isLogin ? '🚀 Sign In' : '✨ Create Account')}
+            {/* Pure white pill button as in ŌURA app */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="oura-btn"
+              style={{
+                marginTop: '0.75rem',
+                width: '100%',
+                padding: '0.85rem',
+                fontSize: '0.92rem',
+              }}
+            >
+              {loading ? 'Validating Telemetry...' : (isLogin ? 'Enter Dashboard' : 'Create Member Account')}
             </button>
           </form>
 
-          {/* Switch mode */}
-          <p style={{ textAlign: 'center', marginTop: '1.5rem', color: '#64748b', fontSize: '0.88rem' }}>
-            {isLogin ? "Don't have an account? " : "Already have an account? "}
+          {/* Toggle mode helper link */}
+          <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.82rem', color: 'var(--text-3, #6b7280)' }}>
+            {isLogin ? 'New to Dr. Glance? ' : 'Already have an account? '}
             <span
               onClick={switchMode}
-              style={{ color: '#6366f1', cursor: 'pointer', fontWeight: 600, textDecoration: 'underline', textDecorationColor: 'rgba(99,102,241,0.4)' }}
+              style={{ color: '#ffffff', cursor: 'pointer', fontWeight: 600, textDecoration: 'underline' }}
             >
-              {isLogin ? 'Sign up free' : 'Login here'}
+              {isLogin ? 'Create one now' : 'Sign in'}
             </span>
-          </p>
-
-          {/* Footer note */}
-          <div style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px solid rgba(255,255,255,0.06)', textAlign: 'center' }}>
-            <p style={{ fontSize: '0.75rem', color: '#334155' }}>
-              🔒 Encrypted · HIPAA Compliant · No data sold
-            </p>
           </div>
         </div>
       </div>
