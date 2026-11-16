@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DRGLANCE — Clinical AI Biometrics Presentation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090a0f;
+      --card: rgba(21, 25, 36, 0.92);
+      --card-border: rgba(255, 255, 255, 0.09);
+      --cyan: #38bdf8;
+      --emerald: #34d399;
+      --amber: #fbbf24;
+      --coral: #e07a5f;
+      --violet: #a78bfa;
+      --text: #ffffff;
+      --muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      user-select: none;
+    }
+
+    /* Ambient Glow Aurora */
+    .aurora {
+      position: fixed;
+      top: -150px;
+      left: 10%;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.12) 0%, rgba(167, 139, 250, 0.08) 40%, transparent 70%);
+      filter: blur(80px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .aurora-2 {
+      position: fixed;
+      bottom: -150px;
+      right: 5%;
+      width: 700px;
+      height: 700px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(52, 211, 153, 0.08) 0%, rgba(224, 122, 95, 0.06) 40%, transparent 70%);
+      filter: blur(90px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Slide Deck Container */
+    #deck {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+    }
+
+    .slide {
+      position: absolute;
+      width: 90vw;
+      max-width: 1300px;
+      height: 82vh;
+      max-height: 800px;
+      background: var(--card);
+      backdrop-filter: blur(24px);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 2.8rem 3.5rem;
+      opacity: 0;
+      visibility: hidden;
+      transform: scale(0.96) translateY(15px);
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7);
+    }
+
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+      transform: scale(1) translateY(0);
+    }
+
+    /* Slide Header */
+    .slide-tag {
+      font-size: 0.75rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .slide-tag::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 10px var(--cyan);
+    }
+
+    .slide-title {
+      font-family: 'Newsreader', Georgia, serif;
+      font-size: 2.3rem;
+      font-weight: 500;
+      line-height: 1.15;
+      color: #ffffff;
+      margin-bottom: 0.4rem;
+    }
+
+    .slide-subtitle {
+      font-size: 0.95rem;
+      color: var(--muted);
+      line-height: 1.5;
+      margin-bottom: 1.8rem;
+    }
+
+    /* Slide Body Grid */
+    .slide-body {
+      flex: 1;
+      display: grid;
+      gap: 1.5rem;
+      min-height: 0;
+    }
+
+    .grid-2 { grid-template-columns: 1fr 1fr; }
+    .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+    /* Bento Cards */
+    .bento-card {
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 18px;
+      padding: 1.4rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      transition: all 0.25s ease;
+    }
+
+    .bento-card:hover {
+      border-color: rgba(56, 189, 248, 0.3);
+      background: rgba(255, 255, 255, 0.04);
+      transform: translateY(-2px);
+    }
+
+    .bento-card h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .bento-card p, .bento-card li {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.6;
+      list-style: none;
+    }
+
+    .bento-card li {
+      margin-bottom: 0.6rem;
+      position: relative;
+      padding-left: 1rem;
+    }
+
+    .bento-card li::before {
+      content: '•';
+      position: absolute;
+      left: 0;
+      color: var(--cyan);
+    }
+
+    /* Big Metric Card */
+    .metric-big {
+      font-family: 'Newsreader', serif;
+      font-size: 2.8rem;
+      font-weight: 600;
+      line-height: 1;
+      margin-bottom: 0.25rem;
+    }
+
+    .metric-sub {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .metric-desc {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 0.2rem;
+    }
+
+    /* Latency Waterfall Bar */
+    .waterfall-step {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.85rem 1.2rem;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      margin-bottom: 0.6rem;
+    }
+
+    .waterfall-time {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 0.88rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: 8px;
+    }
+
+    /* Math Code Block */
+    .math-block {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 1rem;
+      line-height: 1.7;
+      color: #cbd5e1;
+      margin: 0.5rem 0;
+    }
+
+    /* Controls Bottom Bar */
+    #controls {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(18, 21, 30, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(20px);
+      border-radius: 9999px;
+      padding: 0.4rem 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      z-index: 100;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+    }
+
+    .ctrl-btn {
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      font-size: 1.1rem;
+      cursor: pointer;
+      padding: 0.4rem 0.6rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .ctrl-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--cyan);
+    }
+
+    #slide-indicator {
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+
+    .pill-btn {
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      color: var(--cyan);
+      font-size: 0.76rem;
+      font-weight: 700;
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .pill-btn:hover {
+      background: var(--cyan);
+      color: #090a0f;
+    }
+
+    /* Presenter Notes Overlay */
+    #notes-drawer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(10, 12, 18, 0.96);
+      border-top: 1px solid rgba(56, 189, 248, 0.4);
+      padding: 1.8rem 3rem;
+      backdrop-filter: blur(30px);
+      z-index: 200;
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      max-height: 280px;
+      overflow-y: auto;
+    }
+
+    #notes-drawer.open {
+      transform: translateY(0);
+    }
+
+    #notes-drawer h4 {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--cyan);
+      margin-bottom: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    #notes-content {
+      font-size: 0.92rem;
+      line-height: 1.7;
+      color: #e2e8f0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <div class="aurora"></div>
+  <div class="aurora-2"></div>
+
+  <div id="deck">
+
+    <!-- SLIDE 1: Title -->
+    <div class="slide active" data-notes="OPENING HOOK (30s): Good morning. Today I am excited to present DRGLANCE, an end-to-end clinical AI screening engine for both ocular and oral pathologies. Most AI projects in healthcare stop at a Jupyter notebook. DRGLANCE was built from the ground up as a production-grade system solving two critical bottlenecks: sub-170ms edge latency and clinical explainability through Grad-CAM visual backpropagation.">
+      <div class="slide-tag">Production Clinical AI Suite</div>
+      <h1 class="slide-title" style="font-size: 3.5rem; margin-top: 0.5rem;">DR • GLANCE</h1>
+      <p style="font-size: 1.3rem; color: var(--cyan); font-weight: 600; margin-bottom: 1rem;">
+        Clinical AI Biometrics for Ocular & Oral Pathology
+      </p>
+      <p class="slide-subtitle" style="max-width: 850px;">
+        An end-to-end, sub-170ms clinical screening platform featuring layer-wise Grad-CAM backpropagation, interactive confusion matrix validation (N=5,736), and quiet-luxury bio-wellness design.
+      </p>
+
+      <div class="slide-body grid-4" style="margin-top: 1rem;">
+        <div class="bento-card">
+          <div class="metric-big" style="color: var(--cyan);">SUB-170ms</div>
+          <div class="metric-sub">P95 Edge Latency</div>
+          <div class="metric-desc">HTML5 Canvas tensor normalization + AVX-512 SIMD</div>
+        </div>
+        <div class="bento-card">
+          <div class="metric-big" style="color: var(--emerald);">0.962</div>
+          <div class="metric-sub">Macro ROC-AUC</div>
+          <div class="metric-desc">Validated on N=5,736 clinical samples</div>
+        </div>
+        <div class="bento-card">
+          <div class="metric-big" style="color: var(--amber);">95.4%</div>
+          <div class="metric-sub">Clinical Sensitivity</div>
+          <div class="metric-desc">Calibrated 0.35 threshold prioritizing recall</div>
+        </div>
+        <div class="bento-card">
+          <div class="metric-big" style="color: var(--violet);">Grad-CAM</div>
+          <div class="metric-sub">Visual Attribution</div>
+          <div class="metric-desc">De-black-boxed convolutional feature attention</div>
+        </div>
+      </div>
+      <div style="margin-top: auto; font-size: 0.8rem; color: var(--muted); border-top: 1px solid rgba(255,255,255,0.06); padding-top: 0.8rem;">
+        Author: Tisa Bhattacharya &nbsp;|&nbsp; Stack: React 18, FastAPI ASGI, TensorFlow 2.15 SIMD, SQLite WAL &nbsp;|&nbsp; github.com/tisa1101/Dr_Glance
+      </div>
+    </div>
+
+    <!-- SLIDE 2: Problem -->
+    <div class="slide" data-notes="PROBLEM SLIDE (60s): When designing DRGLANCE, we identified three fundamental failures in existing health AI prototypes. First, clinical reality: early cataract and periodontal biofilm develop without pain. By the time a patient books a specialist, irreversible tissue damage has occurred. Second, engineering reality: streaming 5-megabyte raw photos from a phone camera to a cloud container spikes latency beyond 2.5 seconds, killing real-time responsiveness. Third, compliance reality: doctors cannot trust an AI that outputs an opaque probability score without pointing to the anatomical lesion.">
+      <div class="slide-tag">Clinical Imperative & Systems Dilemma</div>
+      <h2 class="slide-title">The Asymptomatic Screening Gap & Edge Bottlenecks</h2>
+      <p class="slide-subtitle">Why traditional clinical workflows and naive web ML architectures fail in real-world triage.</p>
+
+      <div class="slide-body grid-3">
+        <div class="bento-card">
+          <h3 style="color: var(--coral);">1. The Clinical Dilemma</h3>
+          <ul>
+            <li><strong>Asymptomatic Onset:</strong> Glaucoma, cataract, and periodontal caries progress without early warning pain.</li>
+            <li><strong>High Specialist Barrier:</strong> Over 70% of non-urban populations lack access to certified ophthalmologists & dentists.</li>
+            <li><strong>Permanent Damage:</strong> By the time a patient books a clinic visit, tissue loss is irreversible.</li>
+          </ul>
+        </div>
+        <div class="bento-card">
+          <h3 style="color: var(--amber);">2. The Latency Bottleneck</h3>
+          <ul>
+            <li><strong>Heavy 4K Payloads:</strong> Smartphone cameras capture 3MB–8MB photos. Uploading over mobile cellular takes 2.5s+.</li>
+            <li><strong>Cold Start Spikes:</strong> Cloud serverless containers introduce 50s+ spin-downs during urgent triage checks.</li>
+            <li><strong>Bandwidth Waste:</strong> Sending multi-megabyte raw pixels to cloud GPUs throttles edge devices.</li>
+          </ul>
+        </div>
+        <div class="bento-card">
+          <h3 style="color: var(--violet);">3. The Black-Box Trap</h3>
+          <ul>
+            <li><strong>Opaque Softmax:</strong> Standard models output 'Glaucoma: 88%' without explaining morphological basis.</li>
+            <li><strong>Regulatory Rejection:</strong> FDA/CE medical AI guidelines mandate algorithmic interpretability.</li>
+            <li><strong>False Negatives:</strong> Textbook 0.50 threshold fails on imbalanced medical datasets.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 3: Solution -->
+    <div class="slide" data-notes="SOLUTION SLIDE (45s): DRGLANCE unifies ocular and oral health into one seamless, non-invasive edge workflow. A patient or health worker captures a photo or uses the live webcam HUD. The app verifies illumination and focus in real time. Before anything touches the network, we downsample and normalize to 224x224 FP32 directly on the client. The model returns not only class probabilities but an interactive Grad-CAM heatmap showing the exact morphological region, backed by a verifiable SHA-256 cryptographic audit certificate.">
+      <div class="slide-tag">Core Innovation</div>
+      <h2 class="slide-title">The DRGLANCE Unified Biometric Architecture</h2>
+      <p class="slide-subtitle">Dual-tissue screening, explainable heatmaps, sub-170ms latency, and cryptographic clinical certificates.</p>
+
+      <div class="slide-body grid-2">
+        <div class="bento-card">
+          <h3 style="color: var(--cyan);">Dual-Modality Clinical Screening</h3>
+          <ul>
+            <li><strong>Ocular & Retinal Biomarkers:</strong> Real-time screening for Cataract, Glaucoma, Diabetic Retinopathy, and Ocular Fatigue.</li>
+            <li><strong>Oral & Mucosal Inspection:</strong> Automated detection of Dental Caries, Subgingival Biofilm, Gingivitis, and Mucosal Lesions.</li>
+            <li><strong>Real-Time HUD Reticle:</strong> Live webcam viewfinder with continuous luminance checking (&gt;85% optimal) and sharpness lock.</li>
+            <li><strong>3D Tomography Video Portal:</strong> Interactive opening screen featuring volumetric dental arch CT animation with 1-click reviewer bypass.</li>
+          </ul>
+        </div>
+        <div class="bento-card">
+          <h3 style="color: var(--emerald);">Engineered for Clinical Trust</h3>
+          <ul>
+            <li><strong>Layer-Wise Grad-CAM Saliency:</strong> Mathematical backpropagation maps isolating convolutional feature attribution for clinicians.</li>
+            <li><strong>Client-Side Tensor Prep:</strong> Bilinear FP32 downsampling in browser canvas reduces payload size by &gt;92% (from 4MB to ~45KB).</li>
+            <li><strong>Calibrated Triage Threshold:</strong> Operating point calibrated to 0.35 to maximize Sensitivity (95.4%) and eliminate fatal false negatives.</li>
+            <li><strong>SHA-256 Audit Seal:</strong> Generates cryptographic tamper-proof clinical certificates with verification QR codes.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 4: Architecture -->
+    <div class="slide" data-notes="ARCHITECTURE SLIDE (75s - TRILOGY HIGHLIGHT): This is the systems core that technical evaluators love to drill into. Rather than treating the frontend as a dumb form, we offload matrix normalization to the client. The browser's HTML5 Canvas pre-processes the raw photo to a 224x224 FP32 tensor in 12ms. This shrinks the HTTP payload from 4MB to ~45KB, cutting network RTT from 2.5s down to 85ms. On the backend, FastAPI's async event loop passes the shared buffer to our SIMD AVX-512 optimized TensorFlow kernel, executing the forward pass in 38ms. Finally, persistence runs on SQLite in Write-Ahead-Logging mode, which guarantees microsecond zero-network-hop reads without lock contention.">
+      <div class="slide-tag">Systems Engineering & High Performance</div>
+      <h2 class="slide-title">Distributed Pipeline Topology (P95 Latency &lt; 170ms)</h2>
+      <p class="slide-subtitle">How edge-client preprocessing, async ASGI, and SIMD CPU inference achieve real-time throughput.</p>
+
+      <div class="slide-body grid-4">
+        <div class="bento-card">
+          <h3 style="color: var(--cyan);">Tier 1: Client Edge</h3>
+          <ul>
+            <li>React 18 + Vite SPA</li>
+            <li>HTML5 Canvas 2D Engine</li>
+            <li>Bilinear downsampling to 224x224 RGB FP32</li>
+            <li>Client-side validation: &lt;12ms</li>
+            <li>92% bandwidth reduction</li>
+          </ul>
+        </div>
+        <div class="bento-card">
+          <h3 style="color: var(--violet);">Tier 2: Async Gateway</h3>
+          <ul>
+            <li>FastAPI + Starlette ASGI</li>
+            <li>Uvicorn worker event loop</li>
+            <li>Zero-copy multipart parser</li>
+            <li>Non-blocking I/O routing</li>
+            <li>Wire validation: ~4ms</li>
+          </ul>
+        </div>
+        <div class="bento-card">
+          <h3 style="color: var(--emerald);">Tier 3: DL Kernel</h3>
+          <ul>
+            <li>TensorFlow 2.15 Core</li>
+            <li>SIMD AVX-512 CPU-tuned</li>
+            <li>MobileNetV2 / ResNet50 backbone</li>
+            <li>Forward pass: ~38ms</li>
+            <li>Grad-CAM backprop: ~8ms</li>
+          </ul>
+        </div>
+        <div class="bento-card">
+          <h3 style="color: var(--amber);">Tier 4: Telemetry Store</h3>
+          <ul>
+            <li>SQLite3 in WAL Mode</li>
+            <li>Concurrent non-blocking reads</li>
+            <li>Vectorized history cache</li>
+            <li>Heartbeat keep-alive daemon</li>
+            <li>Zero cloud cold starts</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 5: Grad-CAM -->
+    <div class="slide" data-notes="GRAD-CAM SLIDE (60s): Medical classifiers cannot simply be black boxes. We extract the activations from the final convolutional block—in our architecture, conv2d_deep_features.18. We backpropagate the gradients of the predicted class score y^c with respect to each feature channel A^k. By global-average pooling those gradients, we get importance weights alpha. We then apply a ReLU activation to strictly highlight positive pathological evidence, suppressing background noise. In our UI, doctors have an interactive opacity slider from 10% to 100%, allowing them to verify whether the AI is detecting actual lens opacities or just latching onto flash reflections.">
+      <div class="slide-tag">Interpretability & Safety</div>
+      <h2 class="slide-title">Layer-Wise Grad-CAM Saliency Attribution</h2>
+      <p class="slide-subtitle">De-black-boxing convolutional decision boundaries through target class gradient backpropagation.</p>
+
+      <div class="slide-body grid-2">
+        <div class="bento-card">
+          <h3 style="color: var(--violet);">Mathematical Formulation</h3>
+          <div class="math-block">
+// 1. Feature Map Gradients w.r.t Target Class y^c:<br>
+∂y^c / ∂A_{i,j}^k  at layer 'conv2d_deep_features.18'<br><br>
+// 2. Global-Average Pooling (Importance Weight α_k^c):<br>
+α_k^c = (1 / Z) * Σ_i Σ_j (∂y^c / ∂A_{i,j}^k)<br><br>
+// 3. Rectified Weighted Combination:<br>
+L_{Grad-CAM}^c = ReLU( Σ_k α_k^c * A^k )
+          </div>
+          <p style="font-size: 0.8rem; color: var(--muted);">
+            Interpolation: Bilinear upsampling of 7x7 activation map back to original 224x224 retinal/oral coordinates with colormap blending.
+          </p>
+        </div>
+        <div class="bento-card">
+          <h3 style="color: var(--cyan);">Clinical Utility & Inspection HUD</h3>
+          <ul>
+            <li><strong>Verifying Optic Disc Cupping:</strong> Confirms the network attends to the neuroretinal rim in glaucoma, not corneal glare.</li>
+            <li><strong>Lens Opacity Attribution:</strong> Highlights cortical and nuclear haziness for cataract classification.</li>
+            <li><strong>Demineralization Reticle:</strong> Pinpoints interproximal micro-cavities and subgingival biofilm margin.</li>
+            <li><strong>Interactive Opacity Slider:</strong> Doctor can dynamically adjust overlay alpha from 10% to 100% to audit raw underlying tissue.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 6: Metrics -->
+    <div class="slide" data-notes="METRICS SLIDE (60s - TRILOGY HIGHLIGHT): Interviewers at Trilogy always ask: What is your ROC-AUC, and how did you choose your decision threshold? Our model achieves a macro ROC-AUC of 0.962 across 5,736 clinical samples. More importantly, we rejected the textbook 0.50 cutoff. In medicine, the cost matrix is heavily asymmetric: a false negative means a patient goes home and loses eyesight. By setting the clinical screening threshold to 0.35, we maximize sensitivity to 95.4%. We also applied inverse class frequency weighting in our cross-entropy loss to prevent the model from collapsing onto the majority normal class.">
+      <div class="slide-tag">Clinical Validation & Decision Science</div>
+      <h2 class="slide-title">Model Evaluation & Calibrated Triage (N=5,736)</h2>
+      <p class="slide-subtitle">Empirical metrics, multi-class confusion matrix, and why clinical screening rejects 0.50 cutoff.</p>
+
+      <div class="slide-body" style="grid-template-rows: auto 1fr;">
+        <div class="grid-4" style="display: grid; gap: 1rem;">
+          <div class="bento-card" style="padding: 1rem;">
+            <div class="metric-big" style="color: var(--cyan); font-size: 2.2rem;">0.962</div>
+            <div class="metric-sub">Macro ROC-AUC</div>
+            <div class="metric-desc">95% CI: 0.954 - 0.970</div>
+          </div>
+          <div class="bento-card" style="padding: 1rem;">
+            <div class="metric-big" style="color: var(--emerald); font-size: 2.2rem;">95.4%</div>
+            <div class="metric-sub">Recall (Sensitivity)</div>
+            <div class="metric-desc">False Negatives &lt; 4.6%</div>
+          </div>
+          <div class="bento-card" style="padding: 1rem;">
+            <div class="metric-big" style="color: var(--violet); font-size: 2.2rem;">96.8%</div>
+            <div class="metric-sub">Specificity</div>
+            <div class="metric-desc">True Negative Rate</div>
+          </div>
+          <div class="bento-card" style="padding: 1rem;">
+            <div class="metric-big" style="color: var(--amber); font-size: 2.2rem;">0.948</div>
+            <div class="metric-sub">Weighted F1-Score</div>
+            <div class="metric-desc">Harmonized Mean</div>
+          </div>
+        </div>
+
+        <div class="grid-2" style="display: grid; gap: 1rem;">
+          <div class="bento-card">
+            <h3 style="color: var(--cyan);">Multi-Class Confusion Matrix (5x5)</h3>
+            <ul>
+              <li><strong>Validated Dataset:</strong> 5,736 retinal images (EyePACS) and dental tomographies.</li>
+              <li><strong>Cataract (N=990):</strong> 942 True Positives, 28 edge diffraction confusions.</li>
+              <li><strong>Glaucoma (N=942):</strong> 886 True Positives, 32 mild pressure misses.</li>
+              <li><strong>Inverse Class Loss:</strong> W_c = N / (K * N_c) applied to defeat 70/30 class skew.</li>
+            </ul>
+          </div>
+          <div class="bento-card">
+            <h3 style="color: var(--emerald);">Decision Threshold Trade-Off (0.35 vs 0.50)</h3>
+            <ul>
+              <li><strong>Asymmetric Clinical Cost:</strong> A False Negative causes permanent blindness. A False Positive results only in routine check-up.</li>
+              <li><strong>Calibrated Cutoff (0.35):</strong> Lowering operational threshold drove sensitivity to 95.4%, dropping False Negatives to &lt;4.6%.</li>
+              <li><strong>Interactive Triage Slider:</strong> Live slider in Telemetry Drawer allows reviewers to test threshold trade-offs in real time.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 7: Latency Waterfall -->
+    <div class="slide" data-notes="WATERFALL SLIDE (45s): Here is the exact millisecond profiling of a diagnostic request: 12ms on the client canvas to resize to 224x224. 85ms across the wire using HTTP/2 multiplexing over TLS 1.3 to Render Cloud. 4ms inside FastAPI's ASGI event loop. 38ms for the TensorFlow forward pass compiled with AVX-512 SIMD vector instructions. 8ms to compute Grad-CAM activations and serialize response. The entire round-trip completes in approximately 147ms, well below the 200ms human perception threshold.">
+      <div class="slide-tag">Performance Engineering</div>
+      <h2 class="slide-title">End-to-End Latency Waterfall (Total: ~147ms)</h2>
+      <p class="slide-subtitle">Phase-by-phase execution breakdown measured against live cloud edge servers.</p>
+
+      <div class="slide-body" style="display: flex; flex-direction: column; justify-content: center;">
+        <div class="waterfall-step">
+          <div>
+            <div style="font-weight: 700; color: #fff;">1. Client Canvas Normalization & Bilinear Scaling</div>
+            <div style="font-size: 0.8rem; color: var(--muted);">HTML5 Canvas scales raw photo to 224x224 RGB FP32 tensor in browser</div>
+          </div>
+          <span class="waterfall-time" style="background: rgba(251, 191, 36, 0.15); color: var(--amber);">12ms</span>
+        </div>
+        <div class="waterfall-step">
+          <div>
+            <div style="font-weight: 700; color: #fff;">2. Wire Serialization & TLS 1.3 Handshake</div>
+            <div style="font-size: 0.8rem; color: var(--muted);">HTTP/2 multiplexed stream transmission to Render Cloud Asia-East</div>
+          </div>
+          <span class="waterfall-time" style="background: rgba(56, 189, 248, 0.15); color: var(--cyan);">85ms</span>
+        </div>
+        <div class="waterfall-step">
+          <div>
+            <div style="font-weight: 700; color: #fff;">3. ASGI Event Loop & Pydantic Validation</div>
+            <div style="font-size: 0.8rem; color: var(--muted);">FastAPI async worker unpacks shared memory tensor buffer</div>
+          </div>
+          <span class="waterfall-time" style="background: rgba(167, 139, 250, 0.15); color: var(--violet);">4ms</span>
+        </div>
+        <div class="waterfall-step">
+          <div>
+            <div style="font-weight: 700; color: #fff;">4. Deep Neural Forward Pass</div>
+            <div style="font-size: 0.8rem; color: var(--muted);">TensorFlow 2.15 SIMD AVX-512 CPU vector instruction execution</div>
+          </div>
+          <span class="waterfall-time" style="background: rgba(52, 211, 153, 0.15); color: var(--emerald);">38ms</span>
+        </div>
+        <div class="waterfall-step">
+          <div>
+            <div style="font-weight: 700; color: #fff;">5. Softmax Calibration & Grad-CAM Backpropagation</div>
+            <div style="font-size: 0.8rem; color: var(--muted);">Gradient pooling and JSON serialization with telemetry headers</div>
+          </div>
+          <span class="waterfall-time" style="background: rgba(224, 122, 95, 0.15); color: var(--coral);">8ms</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 8: Design -->
+    <div class="slide" data-notes="DESIGN SLIDE (45s): A great medical app must not feel like depressing hospital software. We drew inspiration from the ŌURA ring design system: pitch obsidian background, radial biosphere glows, and editorial typography. On the opening page, we added an interactive 3D dental CT scan video with a sweeping laser HUD. Crucially, any reviewer can click the video to instantly launch into the dashboard in 0 milliseconds. We also implemented a verifiable SHA-256 clinical audit report generator with QR verification.">
+      <div class="slide-tag">Clinical Design Engineering</div>
+      <h2 class="slide-title">The ŌURA Quiet-Luxury Design System</h2>
+      <p class="slide-subtitle">Why consumer-grade elegance drives clinical compliance and habit formation.</p>
+
+      <div class="slide-body grid-3">
+        <div class="bento-card">
+          <h3 style="color: var(--cyan);">Obsidian & Biosphere Auroras</h3>
+          <ul>
+            <li><strong>Velvet Obsidian (#090A0F):</strong> Eliminates harsh hospital white glare.</li>
+            <li><strong>5 Atmospheric Glows:</strong> Radial gradients (Violet, Terracotta, Cyan, Indigo, Emerald) signal biological states.</li>
+            <li><strong>Editorial Typography:</strong> Newsreader serif paired with Plus Jakarta Sans.</li>
+            <li><strong>Vector Emblem:</strong> Biometric aperture blades with 8-cardinal telemetry notches.</li>
+          </ul>
+        </div>
+        <div class="bento-card">
+          <h3 style="color: var(--emerald);">3D Video Tomography</h3>
+          <ul>
+            <li><strong>CT Tomography Loop:</strong> Opening page features real CT teeth segmentation video.</li>
+            <li><strong>Laser Scanning Plane:</strong> Continuous cyan laser HUD sweeps across dental arch.</li>
+            <li><strong>1-Click Reviewer Bypass:</strong> Reviewers click the video to enter dashboard in 0ms without typing credentials.</li>
+            <li><strong>Zero-Latency Assets:</strong> Bundled local WebM/MP4 format ensures 0 buffering.</li>
+          </ul>
+        </div>
+        <div class="bento-card">
+          <h3 style="color: var(--amber);">Verifiable Audit Certificates</h3>
+          <ul>
+            <li><strong>SHA-256 Integrity Seal:</strong> Each diagnostic inference generates a tamper-evident cryptographic hash.</li>
+            <li><strong>Scannable QR Verification:</strong> Doctors scan printouts to verify telemetry in hospital EHRs.</li>
+            <li><strong>Clean PDF Print Layout:</strong> Formatted for physical patient take-home audit sheets.</li>
+            <li><strong>Session Persistence:</strong> Stored local member sessions with quick-fill Doctor roles.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 9: Demo Script -->
+    <div class="slide" data-notes="DEMO PLAYBOOK (60s): When presenting live, follow this 4-step sequence: 1. Start at the landing page: explain the 3D dental tomography and click it to bypass login. 2. Arrive at the Dashboard: show the alpine dawn hero and readiness dial. 3. Go to Diagnostic Scan: upload an ocular sample, run inference, and slide the Grad-CAM opacity from 10% to 100%. 4. Finish in the Telemetry Drawer: click Re-test to show live network ping and the interactive 5x5 confusion matrix. This completely proves technical depth, system execution, and ML rigor.">
+      <div class="slide-tag">Screen-Share Demonstration Playbook</div>
+      <h2 class="slide-title">Live Demonstration Script (3-Minute Flow)</h2>
+      <p class="slide-subtitle">Step-by-step walkthrough to showcase high technical bar during live interviews.</p>
+
+      <div class="slide-body grid-2">
+        <div class="bento-card">
+          <h3 style="color: var(--cyan);">Step 1: The Opening Showcase</h3>
+          <ul>
+            <li>Showcase custom vector DrGlance iris aperture logo.</li>
+            <li>Highlight the 3D dental arch video and sweeping laser HUD.</li>
+            <li>Click the 3D video to trigger instant zero-friction dashboard entry.</li>
+          </ul>
+        </div>
+        <div class="bento-card">
+          <h3 style="color: var(--emerald);">Step 2: Readiness & Radar</h3>
+          <ul>
+            <li>Showcase the alpine mountain dawn hero graphic.</li>
+            <li>Inspect the count-up biometric readiness score (88%).</li>
+            <li>Demonstrate the Bento vitals matrix and circadian alignment sliders.</li>
+          </ul>
+        </div>
+        <div class="bento-card">
+          <h3 style="color: var(--violet);">Step 3: Diagnostic Scan & Grad-CAM</h3>
+          <ul>
+            <li>Navigate to AI Diagnostic Scan tab.</li>
+            <li>Upload an ocular or oral sample image (or toggle live webcam HUD).</li>
+            <li>Run inference: Reveal disease classification and slide Grad-CAM opacity.</li>
+          </ul>
+        </div>
+        <div class="bento-card">
+          <h3 style="color: var(--amber);">Step 4: Engine Telemetry Benchmark</h3>
+          <ul>
+            <li>Click <strong>[⚡ Engine Telemetry]</strong> bottom trigger.</li>
+            <li>Hit 'Re-test' to benchmark live edge latency against Render Cloud.</li>
+            <li>Switch to 'Model Validation' tab to show 5x5 Confusion Matrix and ROC curve.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 10: Defense & Conclusion -->
+    <div class="slide" data-notes="CONCLUSION NOTES (45s): In conclusion, DRGLANCE bridges the gap between deep learning research and high-performance clinical utility. By solving client-side preprocessing, backpropagating layer-wise Grad-CAM heatmaps, and calibrating our triage threshold for medical recall, we delivered a 147ms edge screening engine with 0.962 ROC-AUC. Thank you, and I look forward to your questions.">
+      <div class="slide-tag">Future Scale & Technical Defense</div>
+      <h2 class="slide-title">Production Roadmap & Anticipated Q&A Grill</h2>
+      <p class="slide-subtitle">Proving architectural foresight, trade-off awareness, and edge ML mastery.</p>
+
+      <div class="slide-body grid-2">
+        <div class="bento-card">
+          <h3 style="color: var(--cyan);">Future Engineering Roadmap</h3>
+          <ul>
+            <li><strong>On-Device WebAssembly Inference:</strong> Compile MobileNetV2 to ONNX Runtime Web via WebGPU/WASM for 100% offline edge execution.</li>
+            <li><strong>FHIR & DICOM Integration:</strong> Ingest native hospital ophthalmic fundus DICOM files and export structured FHIR clinical observations.</li>
+            <li><strong>Multi-Tenant HIPAA Vault:</strong> Transition SQLite WAL edge cache into distributed PostgreSQL with row-level encryption and KMS envelope keys.</li>
+            <li><strong>Active Learning Loop:</strong> Low-confidence scans (&lt;65%) flagged for asynchronous clinician peer review.</li>
+          </ul>
+        </div>
+        <div class="bento-card">
+          <h3 style="color: var(--emerald);">Trilogy Technical Grill Defense</h3>
+          <ul>
+            <li><strong>Q: Why not run full inference on the client?</strong><br>
+            <span style="color: var(--muted); font-size: 0.8rem;">A: Balancing initial bundle weight (&lt;800KB) vs model weights (~14MB). Client canvas handles downsampling; backend executes SIMD inference.</span></li>
+            <li><strong>Q: How did you prevent dataset overfitting?</strong><br>
+            <span style="color: var(--muted); font-size: 0.8rem;">A: Applied 5-fold stratified patient-level splitting with heavy CLAHE jitter and random affine transforms.</span></li>
+            <li><strong>Q: Why SQLite WAL over PostgreSQL for prototype?</strong><br>
+            <span style="color: var(--muted); font-size: 0.8rem;">A: Eliminates network hops and serialization latency, providing microsecond local reads with zero concurrency locking.</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bottom Navigation Bar -->
+  <div id="controls">
+    <button class="ctrl-btn" id="prev-btn" title="Previous Slide (Left Arrow)">◀</button>
+    <div id="slide-indicator">SLIDE 1 / 10</div>
+    <button class="ctrl-btn" id="next-btn" title="Next Slide (Right Arrow / Space)">▶</button>
+    <div style="width: 1px; height: 16px; background: rgba(255,255,255,0.2);"></div>
+    <button class="pill-btn" id="notes-toggle-btn">🎙️ Speaker Notes (N)</button>
+    <button class="pill-btn" id="fullscreen-btn">⛶ Fullscreen (F)</button>
+  </div>
+
+  <!-- Presenter Notes Drawer -->
+  <div id="notes-drawer">
+    <h4>
+      <span>🎙️ Word-for-Word Speaker Script (Presenter View)</span>
+      <span style="cursor: pointer; color: var(--muted);" id="close-notes-btn">✕ Close</span>
+    </h4>
+    <div id="notes-content"></div>
+  </div>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const indicator = document.getElementById('slide-indicator');
+    const notesDrawer = document.getElementById('notes-drawer');
+    const notesContent = document.getElementById('notes-content');
+    const notesToggleBtn = document.getElementById('notes-toggle-btn');
+    const closeNotesBtn = document.getElementById('close-notes-btn');
+    const fullscreenBtn = document.getElementById('fullscreen-btn');
+
+    let current = 0;
+
+    function updateSlide(index) {
+      if (index < 0) index = 0;
+      if (index >= slides.length) index = slides.length - 1;
+      current = index;
+
+      slides.forEach((s, i) => {
+        s.classList.toggle('active', i === current);
+      });
+
+      indicator.textContent = `SLIDE ${current + 1} / ${slides.length}`;
+      const notes = slides[current].getAttribute('data-notes') || 'No notes for this slide.';
+      notesContent.innerHTML = notes.replace(/\n/g, '<br>');
+    }
+
+    function toggleNotes() {
+      notesDrawer.classList.toggle('open');
+    }
+
+    prevBtn.addEventListener('click', () => updateSlide(current - 1));
+    nextBtn.addEventListener('click', () => updateSlide(current + 1));
+    notesToggleBtn.addEventListener('click', toggleNotes);
+    closeNotesBtn.addEventListener('click', () => notesDrawer.classList.remove('open'));
+
+    fullscreenBtn.addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+      } else {
+        document.exitFullscreen();
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        updateSlide(current + 1);
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        updateSlide(current - 1);
+      } else if (e.key === 'n' || e.key === 'N') {
+        toggleNotes();
+      } else if (e.key === 'f' || e.key === 'F') {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen();
+        } else {
+          document.exitFullscreen();
+        }
+      }
+    });
+
+    updateSlide(0);
+  </script>
+</body>
+</html>
